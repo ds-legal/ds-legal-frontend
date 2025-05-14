@@ -9,6 +9,7 @@ import {
     LogOut,
 } from "lucide-react";
 import clsx from "clsx";
+import logo from "../../assets/logo-color.png";
 
 const NAV_ITEMS = [
     { name: "Dashboard", Icon: Home, mobile: true },
@@ -39,8 +40,7 @@ export default function Sidebar() {
                 <div>
                     {/* Logo Section */}
                     <div className="flex items-center gap-2 mb-10">
-                        <div className="bg-blue-600 rounded-full p-2" />
-                        <h1 className="text-xl font-semibold">Ds Legal</h1>
+                        <img src={logo} alt="logo" />
                     </div>
 
                     {/* Navigation Links */}
