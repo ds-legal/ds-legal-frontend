@@ -1,11 +1,11 @@
-function Dashboard() {
+function Tasks() {
     return (
         <>
             <div className="px-8 py-4">
-                <h1>This is the dashboard page</h1>
+                <h1>This is the Tasks page</h1>
             </div>
         </>
     );
 }
 
-export default Dashboard;
+export default Tasks;
