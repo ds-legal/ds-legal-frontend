@@ -1,0 +1,131 @@
+import { useState } from "react";
+import {
+    Home,
+    ClipboardList,
+    Calendar,
+    FileText,
+    StickyNote,
+    Settings,
+    LogOut,
+} from "lucide-react";
+import clsx from "clsx";
+
+const NAV_ITEMS = [
+    { name: "Dashboard", Icon: Home, mobile: true },
+    {
+        name: "Task Management",
+        Icon: ClipboardList,
+        mobile: true,
+        mobileName: "Tasks",
+    },
+    { name: "Appointments", Icon: Calendar, mobile: true },
+    { name: "Invoices", Icon: FileText, mobile: true, mobileName: "Invoice" },
+    { name: "Notes", Icon: StickyNote, mobile: false },
+    { name: "Settings", Icon: Settings, mobile: false },
+];
+
+export default function Sidebar() {
+    const [active, setActive] = useState("Dashboard");
+
+    const handleLogout = () => {
+        // Logout logic here
+        console.log("User logged out");
+    };
+
+    return (
+        <>
+            {/* Desktop & Tablet Sidebar */}
+            <aside className="hidden sticky top-0 max-h-screen sm:flex flex-col justify-between w-64 xl:w-72 h-screen bg-black text-white p-4">
+                <div>
+                    {/* Logo Section */}
+                    <div className="flex items-center gap-2 mb-10">
+                        <div className="bg-blue-600 rounded-full p-2" />
+                        <h1 className="text-xl font-semibold">Ds Legal</h1>
+                    </div>
+
+                    {/* Navigation Links */}
+                    <nav className="flex flex-col gap-4">
+                        {NAV_ITEMS.map((item) => (
+                            <button
+                                key={item.name}
+                                onClick={() => setActive(item.name)}
+                                className={clsx(
+                                    "flex items-center gap-3 px-3 py-2 rounded-md transition-all duration-200 cursor-pointer",
+                                    active === item.name
+                                        ? "bg-[#141D2A] text-white font-semibold"
+                                        : "hover:bg-[#1f2a38] text-gray-300"
+                                )}
+                                aria-current={
+                                    active === item.name ? "page" : undefined
+                                }
+                            >
+                                <item.Icon size={20} aria-hidden="true" />
+                                <span>{item.name}</span>
+                            </button>
+                        ))}
+                    </nav>
+                </div>
+
+                {/* User Info Section */}
+                <div className="flex items-center gap-3 mt-10 border-t border-gray-700 pt-4">
+                    <img
+                        src="https://randomuser.me/api/portraits/women/44.jpg"
+                        alt="User profile"
+                        className="w-10 h-10 rounded-full object-cover"
+                    />
+                    <div className="flex flex-col text-sm">
+                        <span className="font-semibold">Joan Legal</span>
+                        <span className="text-gray-400 text-xs">
+                            Joan@dslegal.com
+                        </span>
+                    </div>
+                    <button
+                        onClick={handleLogout}
+                        className="ml-auto p-1 rounded-full hover:bg-gray-800 transition-colors"
+                        aria-label="Log out"
+                    >
+                        <LogOut size={18} />
+                    </button>
+                </div>
+            </aside>
+
+            {/* Mobile Bottom Navigation */}
+            <nav
+                className="fixed bottom-0 left-0 right-0 sm:hidden bg-white border-t border-gray-200 flex justify-around py-2 shadow-md"
+                aria-label="Mobile navigation"
+            >
+                {NAV_ITEMS.filter((item) => item.mobile).map((item) => (
+                    <button
+                        key={item.name}
+                        onClick={() => setActive(item.name)}
+                        className="flex flex-col items-center justify-center p-2 cursor-pointer"
+                        aria-current={active === item.name ? "page" : undefined}
+                    >
+                        <item.Icon
+                            size={24}
+                            className={clsx(
+                                active === item.name
+                                    ? "text-blue-500"
+                                    : "text-gray-500"
+                            )}
+                            aria-hidden="true"
+                        />
+                        <span
+                            className={clsx(
+                                "text-xs mt-1",
+                                active === item.name
+                                    ? "text-blue-500 font-medium"
+                                    : "text-gray-500"
+                            )}
+                        >
+                            {item.mobileName || item.name}
+                        </span>
+                        {active === item.name && (
+                            <div className="w-4 h-1 rounded-full bg-blue-500 mt-1" />
+                        )}
+                    </button>
+                ))}
+            </nav>
+        </>
+    );
+}
