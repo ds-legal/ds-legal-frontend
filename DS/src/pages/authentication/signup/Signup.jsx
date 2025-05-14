@@ -79,6 +79,17 @@ function Signup() {
         return !Object.values(newErrors).some((error) => error);
     };
 
+    const isStep1Valid = () => {
+        return (
+            formData.email.trim() !== "" &&
+            formData.firstName.trim() !== "" &&
+            formData.lastName.trim() !== "" &&
+            !errors.email &&
+            !errors.firstName &&
+            !errors.lastName
+        );
+    };
+
     const handleNext = (e) => {
         e.preventDefault();
         if (validateStep1()) {
@@ -103,7 +114,6 @@ function Signup() {
         setIsSubmitting(true);
         try {
             console.log("Form submitted:", formData);
-            // await apiCall(formData);
         } finally {
             setIsSubmitting(false);
         }
@@ -195,8 +205,8 @@ function Signup() {
                 </div>
             </div>
 
-            <div className="flex mx-auto items-center justify-center px-4">
-                <div className="w-full sm:max-w-md bg-white p-8 rounded-lg">
+            <div className="flex flex-wrap mx-auto items-center justify-center px-4">
+                <div className="sm:max-w-md bg-white p-8 rounded-lg">
                     {currentStep === 1 ? (
                         <>
                             <div className="flex justify-left mb-4">
@@ -303,9 +313,9 @@ function Signup() {
                                 {/* Next Button */}
                                 <button
                                     type="submit"
-                                    disabled={isSubmitting}
+                                    disabled={isSubmitting || !isStep1Valid()}
                                     className="w-full bg-[#1983d5] text-white py-2 rounded-full hover:bg-blue-700 
-                                    transition cursor-pointer flex justify-center"
+                                    transition flex justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {isSubmitting ? (
                                         <span className="animate-spin">↻</span>
@@ -352,14 +362,14 @@ function Signup() {
                             </div>
                         </>
                     ) : (
-                        <>
+                        <div className="w-full max-w-md mx-auto">
                             <button
                                 onClick={handleBack}
                                 className="text-base mb-4 flex gap-2 items-center cursor-pointer text-gray-500 hover:text-blue-500"
                             >
                                 <ArrowLeft size={24} /> Back
                             </button>
-                            <h1 className="font-semibold text-2xl mb-2 sm:mb-4 sm:text-5xl text-black leading-tight">
+                            <h1 className="font-semibold text-2xl mb-2 sm:mb-4 sm:text-3xl text-black leading-tight">
                                 Create password
                             </h1>
                             <p className="text-sm text-gray-500 mb-6">
@@ -369,7 +379,7 @@ function Signup() {
                                 </span>
                             </p>
 
-                            <form onSubmit={handleSubmit} className="space-y-6">
+                            <form onSubmit={handleSubmit} className="space-y-4">
                                 {/* Password Field */}
                                 <div className="relative">
                                     <input
@@ -381,7 +391,7 @@ function Signup() {
                                         value={formData.password}
                                         onChange={handleChange}
                                         onBlur={handleBlur}
-                                        className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none ${
+                                        className={`w-full p-2 sm:p-3 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none ${
                                             errors.password
                                                 ? "border-red-500"
                                                 : "border-gray-300"
@@ -390,7 +400,7 @@ function Signup() {
                                     <button
                                         type="button"
                                         onClick={togglePasswordVisibility}
-                                        className="absolute right-3 top-3 text-gray-500 cursor-pointer"
+                                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
                                     >
                                         {showPassword ? (
                                             <EyeOff size={20} />
@@ -416,7 +426,7 @@ function Signup() {
                                         </span>
                                     </div>
 
-                                    {passwordStrength.score < 3 && (
+                                    {formData.password && (
                                         <ul className="mt-2 text-xs text-gray-600 space-y-1">
                                             <li className="flex items-center gap-1">
                                                 {formData.password.length >=
@@ -484,6 +494,13 @@ function Signup() {
                                                         size={14}
                                                     />
                                                 )}
+                                                <li
+                                                    className={
+                                                        passwordChecks.special
+                                                            ? "text-blue-600 font-medium"
+                                                            : ""
+                                                    }
+                                                ></li>
                                                 <span>
                                                     At least one special
                                                     character
@@ -493,57 +510,17 @@ function Signup() {
                                     )}
                                 </div>
 
-                                {/* Requirements List */}
-                                <ul className="text-sm text-gray-600 space-y-1">
-                                    <li
-                                        className={
-                                            passwordChecks.number
-                                                ? "text-blue-600 font-medium"
-                                                : ""
-                                        }
-                                    >
-                                        • one number
-                                    </li>
-                                    <li
-                                        className={
-                                            passwordChecks.upper
-                                                ? "text-blue-600 font-medium"
-                                                : ""
-                                        }
-                                    >
-                                        • one uppercase letter
-                                    </li>
-                                    <li
-                                        className={
-                                            passwordChecks.lower
-                                                ? "text-blue-600 font-medium"
-                                                : ""
-                                        }
-                                    >
-                                        • one lowercase letter
-                                    </li>
-                                    <li
-                                        className={
-                                            passwordChecks.special
-                                                ? "text-blue-600 font-medium"
-                                                : ""
-                                        }
-                                    >
-                                        • A special character (!@#$%^&*)
-                                    </li>
-                                </ul>
-
                                 {/* Terms Agreement */}
-                                <label className="flex items-start space-x-4 my-10 text-sm text-gray-600">
+                                <div className="flex items-start space-x-3 mt-6 text-xs sm:text-sm text-gray-600">
                                     <input
                                         type="checkbox"
                                         checked={agreed}
                                         onChange={() => setAgreed(!agreed)}
-                                        className="mt-1 cursor-pointer"
+                                        className="mt-1 cursor-pointer flex-shrink-0"
                                         required
                                     />
                                     <span className="leading-tight">
-                                        I agree to DS Legal’s Consumer{" "}
+                                        I agree to DS Legal's Consumer{" "}
                                         <a
                                             href="#"
                                             className="text-blue-600 underline"
@@ -558,20 +535,20 @@ function Signup() {
                                             Privacy Policy
                                         </a>
                                     </span>
-                                </label>
+                                </div>
 
                                 {/* Submit */}
                                 <button
                                     type="submit"
-                                    disabled={isSubmitting}
-                                    className="w-full bg-blue-600 text-white py-3 rounded-full hover:bg-blue-700 transition cursor-pointer"
+                                    disabled={isSubmitting || !agreed}
+                                    className="w-full bg-blue-600 text-white py-2 sm:py-3 rounded-full hover:bg-blue-700 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {isSubmitting
                                         ? "Creating account..."
                                         : "Sign Up"}
                                 </button>
                             </form>
-                        </>
+                        </div>
                     )}
                 </div>
             </div>
