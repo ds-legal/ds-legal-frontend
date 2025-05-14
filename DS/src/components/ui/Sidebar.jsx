@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { useState } from "react";
 import {
     Home,
@@ -10,23 +11,50 @@ import {
 } from "lucide-react";
 import clsx from "clsx";
 import logo from "../../assets/logo-color.png";
+import { NavLink, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 
-const NAV_ITEMS = [
-    { name: "Dashboard", Icon: Home, mobile: true },
+export const NAV_ITEMS = [
+    { name: "Dashboard", Icon: Home, mobile: true, link: "/" },
     {
         name: "Task Management",
         Icon: ClipboardList,
         mobile: true,
         mobileName: "Tasks",
+        link: "/tasks",
     },
-    { name: "Appointments", Icon: Calendar, mobile: true },
-    { name: "Invoices", Icon: FileText, mobile: true, mobileName: "Invoice" },
-    { name: "Notes", Icon: StickyNote, mobile: false },
-    { name: "Settings", Icon: Settings, mobile: false },
+    {
+        name: "Appointments",
+        Icon: Calendar,
+        mobile: true,
+        link: "/appointments",
+    },
+    {
+        name: "Invoices",
+        Icon: FileText,
+        mobile: true,
+        mobileName: "Invoice",
+        link: "/invoices",
+    },
+    { name: "Notes", Icon: StickyNote, mobile: false, link: "/notes" },
+    { name: "Settings", Icon: Settings, mobile: false, link: "/settings" },
 ];
 
 export default function Sidebar() {
-    const [active, setActive] = useState("Dashboard");
+    const location = useLocation();
+    const [active, setActive] = useState("");
+
+    // Set initial active state based on current route
+    useEffect(() => {
+        const currentItem = NAV_ITEMS.find(
+            (item) =>
+                location.pathname === item.link ||
+                (item.link !== "/" && location.pathname.startsWith(item.link))
+        );
+        if (currentItem) {
+            setActive(currentItem.name);
+        }
+    }, [location.pathname]);
 
     const handleLogout = () => {
         // Logout logic here
@@ -46,22 +74,26 @@ export default function Sidebar() {
                     {/* Navigation Links */}
                     <nav className="flex flex-col gap-4">
                         {NAV_ITEMS.map((item) => (
-                            <button
-                                key={item.name}
-                                onClick={() => setActive(item.name)}
-                                className={clsx(
-                                    "flex items-center gap-3 px-3 py-2 rounded-md transition-all duration-200 cursor-pointer",
-                                    active === item.name
-                                        ? "bg-[#141D2A] text-white font-semibold"
-                                        : "hover:bg-[#1f2a38] text-gray-300"
-                                )}
-                                aria-current={
-                                    active === item.name ? "page" : undefined
-                                }
-                            >
-                                <item.Icon size={20} aria-hidden="true" />
-                                <span>{item.name}</span>
-                            </button>
+                            <NavLink to={item.link} className="w-full">
+                                <button
+                                    key={item.name}
+                                    onClick={() => setActive(item.name)}
+                                    className={clsx(
+                                        "flex items-center gap-3 px-3 py-2 rounded-md w-full transition-all duration-200 cursor-pointer",
+                                        active === item.name
+                                            ? "bg-[#141D2A] text-white font-semibold"
+                                            : "hover:bg-[#1f2a38] text-gray-300"
+                                    )}
+                                    aria-current={
+                                        active === item.name
+                                            ? "page"
+                                            : undefined
+                                    }
+                                >
+                                    <item.Icon size={20} aria-hidden="true" />
+                                    <span>{item.name}</span>
+                                </button>
+                            </NavLink>
                         ))}
                     </nav>
                 </div>
@@ -81,7 +113,7 @@ export default function Sidebar() {
                     </div>
                     <button
                         onClick={handleLogout}
-                        className="ml-auto p-1 rounded-full hover:bg-gray-800 transition-colors"
+                        className="ml-auto p-4 rounded-full hover:bg-gray-800 transition-colors cursor-pointer"
                         aria-label="Log out"
                     >
                         <LogOut size={18} />
@@ -95,35 +127,39 @@ export default function Sidebar() {
                 aria-label="Mobile navigation"
             >
                 {NAV_ITEMS.filter((item) => item.mobile).map((item) => (
-                    <button
-                        key={item.name}
-                        onClick={() => setActive(item.name)}
-                        className="flex flex-col items-center justify-center p-2 cursor-pointer"
-                        aria-current={active === item.name ? "page" : undefined}
-                    >
-                        <item.Icon
-                            size={24}
-                            className={clsx(
-                                active === item.name
-                                    ? "text-blue-500"
-                                    : "text-gray-500"
-                            )}
-                            aria-hidden="true"
-                        />
-                        <span
-                            className={clsx(
-                                "text-xs mt-1",
-                                active === item.name
-                                    ? "text-blue-500 font-medium"
-                                    : "text-gray-500"
-                            )}
+                    <NavLink to={item.link}>
+                        <button
+                            key={item.name}
+                            onClick={() => setActive(item.name)}
+                            className="flex flex-col items-center justify-center p-2 cursor-pointer"
+                            aria-current={
+                                active === item.name ? "page" : undefined
+                            }
                         >
-                            {item.mobileName || item.name}
-                        </span>
-                        {active === item.name && (
-                            <div className="w-4 h-1 rounded-full bg-blue-500 mt-1" />
-                        )}
-                    </button>
+                            <item.Icon
+                                size={24}
+                                className={clsx(
+                                    active === item.name
+                                        ? "text-blue-500"
+                                        : "text-gray-500"
+                                )}
+                                aria-hidden="true"
+                            />
+                            <span
+                                className={clsx(
+                                    "text-xs mt-1",
+                                    active === item.name
+                                        ? "text-blue-500 font-medium"
+                                        : "text-gray-500"
+                                )}
+                            >
+                                {item.mobileName || item.name}
+                            </span>
+                            {active === item.name && (
+                                <div className="w-4 h-1 rounded-full bg-blue-500 mt-1" />
+                            )}
+                        </button>
+                    </NavLink>
                 ))}
             </nav>
         </>
