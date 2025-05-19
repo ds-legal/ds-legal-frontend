@@ -1,0 +1,80 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap");
+
+@import "tailwindcss";
+
+h1 {
+    font-family: "DM Sans", sans-serif;
+}
+
+p {
+    font-family: "Inter", sans-serif;
+}
+
+.logo-text {
+    font-family: "Nunito", sans-serif;
+}
+
+label {
+    font-family: "DM Sans", sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 1.45;
+    letter-spacing: 0;
+    vertical-align: middle;
+    color: #101928;
+    width: 454px;
+    height: 20px;
+}
+
+.error {
+    color: #cb1a14;
+    font-family: "Inter", sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 145%;
+    letter-spacing: 0;
+    vertical-align: middle;
+    width: 454px;
+    margin-top: 0.25rem;
+    height: 20px;
+}
+
+h6 {
+    font-family: "DM Sans", sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 150%;
+    letter-spacing: 0;
+    text-align: center;
+    vertical-align: middle;
+    width: 35px;
+    height: 24px;
+}
+
+.google {
+    font-family: "Inter", sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 145%;
+    letter-spacing: 0;
+    text-align: center;
+    vertical-align: middle;
+    width: 56px;
+    height: 23px;
+    color: #344054;
+}
+
+.signin {
+    font-family: "DM Sans", sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 145%;
+    letter-spacing: 0%;
+    text-align: center;
+    vertical-align: middle;
+    width: 45px;
+    height: 20px;
+    color: #1983d5;
+}
