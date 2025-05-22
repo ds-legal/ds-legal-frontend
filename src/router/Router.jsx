@@ -8,6 +8,11 @@ import Sidebar from "../components/ui/Sidebar";
 import Header from "../components/ui/Header";
 import { lazy, Suspense } from "react";
 import LoadingSpinner from "../components/common/LoadingSpinner";
+import PasswordRecovery from "../pages/authentication/recoverPassword/PasswordRecovery";
+import CreatePassword from "../pages/authentication/createPassord/CreatePassword";
+import toast, { Toaster } from 'react-hot-toast';
+import ProctedRoute from "./ProctedRoute";
+
 
 // Lazy load page components
 const Dashboard = lazy(() => import("../pages/Dashboard"));
@@ -22,10 +27,10 @@ const Signup = lazy(() => import("../pages/authentication/signup/Signup"));
 // AppRoutes
 function AppRoutes() {
     const location = useLocation();
-    const hideSidebar = ["/signup", "/login"].includes(location.pathname);
+    const hideSidebar = ["/signup", "/login","/password","/createPassword" ].includes(location.pathname);
 
     return (
-        <div className="flex flex-col min-h-screen">
+        <div className="flex flex-col lg:h-screen min-h-screen">
             {/* Combined header + content area */}
             <div className="flex flex-1 overflow-hidden">
                 {/* Sidebar - sticky at top left */}
@@ -52,20 +57,53 @@ function AppRoutes() {
                             }
                         >
                             <Routes>
-                                <Route path="/" element={<Dashboard />} />
-                                <Route path="/invoices" element={<Invoice />} />
-                                <Route path="/tasks" element={<Task />} />
-                                <Route
-                                    path="/appointments"
-                                    element={<Appointment />}
-                                />
-                                <Route path="/notes" element={<Note />} />
-                                <Route
-                                    path="/settings"
-                                    element={<Settings />}
-                                />
-                                <Route path="/login" element={<Login />} />
-                                <Route path="/signup" element={<Signup />} />
+                            <Route path="/" 
+                            element={
+                            <ProctedRoute>
+                            <Dashboard />
+                            </ProctedRoute>
+                            }
+                            />
+                            <Route path="/invoices"
+                             element={
+                            <ProctedRoute>
+                             <Invoice />
+                             </ProctedRoute>
+                             } />
+                            <Route
+                             path="/tasks"
+                              element={
+                            <ProctedRoute>
+                              <Task />
+                              </ProctedRoute>
+                              } />
+                             <Route
+                            path="/appointments"
+                            element={
+                            <ProctedRoute>
+                            <Appointment />
+                            </ProctedRoute>
+                            }
+                            />
+                            <Route path="/notes"
+                             element={
+                            <ProctedRoute>
+                             <Note />
+                             </ProctedRoute>
+                             } 
+                             />
+                            <Route
+                            path="/settings"
+                            element={
+                            <ProctedRoute>
+                            <Settings />
+                            </ProctedRoute>
+                            }
+                            />
+                            <Route path="/login" element={<Login />} />
+                            <Route path="/password" element={<PasswordRecovery/>} />
+                            <Route path="/createPassword" element={<CreatePassword/>} />
+                            <Route path="/signup" element={<Signup />} />
                             </Routes>
                         </Suspense>
                     </div>
@@ -77,9 +115,14 @@ function AppRoutes() {
 
 function App() {
     return (
-        <Router>
+      <>
+       <div className="w-full overflow-x-hidden">
+         <Router>
             <AppRoutes />
         </Router>
+        <Toaster />
+       </div>
+      </>
     );
 }
 

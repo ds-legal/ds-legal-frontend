@@ -2,9 +2,12 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap");
 
-@import "tailwindcss";
+@import "tailwindcss";body{
+ overflow-x: hidden;   
+}
 
-h1 {
+
+h1,h2, h3, h4, h5 {
     font-family: "DM Sans", sans-serif;
 }
 
@@ -77,4 +80,23 @@ h6 {
     width: 45px;
     height: 20px;
     color: #1983d5;
+}
+.img{
+ width: 100%; 
+ object-fit: cover;
+}
+.spinner {
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-top: 3px solid white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  animation: spin 0.6s linear infinite;
+  margin:0 auto ;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }

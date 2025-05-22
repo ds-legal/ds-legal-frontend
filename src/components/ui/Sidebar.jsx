@@ -64,7 +64,8 @@ export default function Sidebar() {
     return (
         <>
             {/* Desktop & Tablet Sidebar */}
-            <aside className="hidden sticky top-0 max-h-screen sm:flex flex-col justify-between w-64 xl:w-72 h-screen bg-black text-white p-4">
+            <aside className="hidden sticky top-0 max-h-screen lg:flex flex-col 
+            justify-between w-64 xl:w-72 h-screen bg-black text-white p-4">
                 <div>
                     {/* Logo Section */}
                     <div className="flex items-center gap-2 mb-10">
@@ -123,7 +124,7 @@ export default function Sidebar() {
 
             {/* Mobile Bottom Navigation */}
             <nav
-                className="fixed bottom-0 left-0 right-0 sm:hidden bg-white border-t border-gray-200 flex justify-around py-2 shadow-md"
+                className="fixed z-50  bottom-0 left-0 right-0 lg:hidden bg-white border-t border-gray-200 flex justify-around py-2 shadow-md"
                 aria-label="Mobile navigation"
             >
                 {NAV_ITEMS.filter((item) => item.mobile).map((item) => (
