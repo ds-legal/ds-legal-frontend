@@ -439,7 +439,7 @@ function Signup() {
         </span>
         </div>
 
-{formData.password && (
+   {formData.password && (
     <ul className="mt-2 text-xs text-gray-600 space-y-1">
         <li className="flex items-center gap-1">
             {formData.password.length >=
