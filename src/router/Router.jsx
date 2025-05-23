@@ -12,6 +12,7 @@ import PasswordRecovery from "../pages/authentication/recoverPassword/PasswordRe
 import CreatePassword from "../pages/authentication/createPassord/CreatePassword";
 import toast, { Toaster } from 'react-hot-toast';
 import ProctedRoute from "./ProctedRoute";
+import CreateTasks from "../pages/CreateTasks";
 
 
 // Lazy load page components
@@ -27,7 +28,7 @@ const Signup = lazy(() => import("../pages/authentication/signup/Signup"));
 // AppRoutes
 function AppRoutes() {
     const location = useLocation();
-    const hideSidebar = ["/signup", "/login","/password","/createPassword" ].includes(location.pathname);
+    const hideSidebar = ["/signup", "/login","/password","/createPassword","/createTask" ].includes(location.pathname);
 
     return (
         <div className="flex flex-col lg:h-screen min-h-screen">
@@ -101,6 +102,7 @@ function AppRoutes() {
                             }
                             />
                             <Route path="/login" element={<Login />} />
+                             <Route path="/createTask" element={<CreateTasks />} />
                             <Route path="/password" element={<PasswordRecovery/>} />
                             <Route path="/createPassword" element={<CreatePassword/>} />
                             <Route path="/signup" element={<Signup />} />
