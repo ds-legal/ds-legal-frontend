@@ -67,7 +67,7 @@ export default function Sidebar() {
         navigate("/login")
 
       }
-      console.log("response", response)
+    //   console.log("response", response)
     };
 
     return (
@@ -171,6 +171,14 @@ export default function Sidebar() {
                         </button>
                     </NavLink>
                 ))}
+
+                <button
+                onClick={handleLogout}
+                className="flex flex-col items-center justify-center p-2 cursor-pointer"
+                >
+                <LogOut size={24} className="text-gray-500" />
+                <span className="text-xs mt-1 text-gray-500">Logout</span>
+            </button>
             </nav>
         </>
     );

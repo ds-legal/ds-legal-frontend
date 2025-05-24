@@ -60,7 +60,7 @@ const LoginForm = () => {
   const hasErrors = Object.keys(errors).length > 0;
 
   return (
-    <div className="w-full h-full px-6 py-6 lg:px-16 lg:py-10 max-w-[600px] mx-auto">
+    <div className="w-full h-full px-6 py-6 lg:px-16 lg:py-10 lg:max-w-[600px] mx-auto">
       <img src={logo} alt="logo" className="w-10 h-auto mb-4" />
       <h1 className="text-[28px] lg:text-[48px] text-[#101928] font-[500] leading-[36px] lg:leading-[52px] mb-4">
         Login to continue your legal journey.

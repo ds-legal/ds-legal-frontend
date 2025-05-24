@@ -5,8 +5,8 @@ import LoginForm from "../../../components/form/LoginForm";
 function Login() {
     return (
         <>
-            <div className="w-[80%] h-[100vh] mx-auto flex items-center justify-center lg:py-0 py-10">
-                <div className="grid lg:grid-cols-2 grid-cols-1 w-full lg:h-[95vh] lg:py-1   shadow bg-white rounded-xl">
+            <div className="md:w-[80%] w-[100%] h-[100vh]  mx-auto flex items-center justify-center lg:py-0 py-10">
+                <div className="grid lg:grid-cols-2 grid-cols-1 w-full lg:h-[95vh] h-full lg:py-1   lg:shadow lg:bg-white rounded-xl ">
 
                 <div className="w-full h-[95vh] lg:flex items-center justify-center p-4 relative hidden ">
                     {/* Image */}
