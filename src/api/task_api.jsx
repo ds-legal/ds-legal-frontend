@@ -53,7 +53,7 @@
 
    export const GetSingleTask =  async(id) => {
     try {
-         const response = await  fetch(`${Base_url}/api/v1/tasks/${id}`,{
+    const response = await  fetch(`${Base_url}/api/v1/tasks/${id}`,{
      method:"GET",
      headers:{
      "Content-Type" : "application/json"

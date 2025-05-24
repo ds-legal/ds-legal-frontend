@@ -11,8 +11,9 @@ import {
 } from "lucide-react";
 import clsx from "clsx";
 import logo from "../../assets/logo-color.png";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import { UserLogOut } from "../../api/auth_api";
 
 export const NAV_ITEMS = [
     { name: "Dashboard", Icon: Home, mobile: true, link: "/" },
@@ -43,6 +44,7 @@ export const NAV_ITEMS = [
 export default function Sidebar() {
     const location = useLocation();
     const [active, setActive] = useState("");
+    const navigate = useNavigate()
 
     // Set initial active state based on current route
     useEffect(() => {
@@ -56,9 +58,16 @@ export default function Sidebar() {
         }
     }, [location.pathname]);
 
-    const handleLogout = () => {
-        // Logout logic here
-        console.log("User logged out");
+    const handleLogout =  async() => {
+     const response =  await  UserLogOut()
+      if(response.status_code === 200){
+        localStorage.removeItem("token")
+        localStorage.removeItem("user")
+        localStorage.removeItem("refresh_token")
+        navigate("/login")
+
+      }
+      console.log("response", response)
     };
 
     return (

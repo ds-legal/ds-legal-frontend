@@ -17,7 +17,7 @@ function Tasks() {
 
   return (
     <>
-      <div className="px-8 py-4 overflow-x-hidden">
+    <div className="px-8 py-4 overflow-x-hidden">
         <div className="flex justify-between lg:flex-row flex-col gap-4">
           <div>
             <h4 className="text-[24px] font-[600] text-[#000000]">Task board</h4>
