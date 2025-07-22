@@ -4,7 +4,7 @@ import LogoWhite from "../../../components/common/LogoWhite";
 import logo from "../../../assets/logo-color.png";
 import { Eye, EyeOff, ArrowLeft, Check, X } from "lucide-react";
 import { UseAuth } from "../../../store/auth.context";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
 
@@ -108,30 +108,31 @@ function Signup() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         // Validate password
         const passwordError = validateField("password", formData.password);
         if (passwordError) {
             setErrors((prev) => ({ ...prev, password: passwordError }));
             return;
         }
-
-        setIsSubmitting(true);
-        try {
-           setIsSubmitting(false)
-         const response =  await  RegisterUser(formData)
-         if(response.status === 201){
-            navigate("/")    
+           setIsSubmitting(true);
+         try {
+            const response =  await  RegisterUser(formData)
+        //   console.log("response", response)
+         if(response.status_code === 201){
+             setIsSubmitting(false);
+            toast.success(response.message);  
+            navigate("/verifyEmail")    
          }else{
           toast.error(response.detail);  
          }
+            
+         } catch (error) {
+        console.log("Failed to login") 
+         }{
+         setIsSubmitting(false)
+         }
 
-        } catch {
-        setIsSubmitting(false);
        
-        }finally{
-            setIsSubmitting(false) 
-        }
     };
 
     const togglePasswordVisibility = () => setShowPassword((prev) => !prev);
@@ -232,9 +233,9 @@ function Signup() {
         </h1>
         <p className="text-sm text-left text-gray-500 mb-4">
         Do you have an account already?{" "}
-        <span className="text-blue-600 hover:underline cursor-pointer">
+        <Link to="/login" className="text-blue-600 hover:underline cursor-pointer">
             Sign In
-        </span>
+        </Link>
         </p>
 
          <form onSubmit={handleNext} className="space-y-4">
@@ -265,11 +266,12 @@ function Signup() {
                 {errors.email}
             </p>
         )}
-        </div>                        {/* First Name */}
+        </div> 
+      {/* First Name */}
         <div>
         <label
-            className="cursor-pointer"
-            htmlFor="firstName"
+        className="cursor-pointer"
+        htmlFor="firstName"
         >
         First name
         </label>
@@ -282,19 +284,18 @@ function Signup() {
         onChange={handleChange}
         onBlur={handleBlur}
         className={`w-full py-2 px-4 border rounded-md outline-none focus:ring-2 ${
-            errors.firstName
-                ? "border-red-500 focus:ring-red-500"
-                : "border-gray-300 focus:ring-blue-500"
+        errors.firstName
+        ? "border-red-500 focus:ring-red-500"
+        : "border-gray-300 focus:ring-blue-500"
         }`}
         />
         {errors.firstName && touched.firstName && (
-            <p className="text-red-500 text-sm mt-1">
-                {errors.firstName}
-            </p>
+        <p className="text-red-500 text-sm mt-1">
+        {errors.firstName}
+        </p>
         )}
         </div>
-
-                                {/* Last Name */}
+       {/* Last Name */}
         <div>
         <label
             className="cursor-pointer"
@@ -302,39 +303,38 @@ function Signup() {
         >
             Last name
          </label>
-            <input
-            id="lastName"
-            type="text"
-            name="lastName"
-            placeholder="Last name"
-            value={formData.lastName}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            className={`w-full py-2 px-4 border rounded-md outline-none focus:ring-2 ${
-                errors.lastName
-                    ? "border-red-500 focus:ring-red-500"
-                    : "border-gray-300 focus:ring-blue-500"
-            }`}
-            />
-            {errors.lastName && touched.lastName && (
-            <p className="text-red-500 text-sm mt-1">
-                {errors.lastName}
-            </p>
-            )}
-          </div>
-
-            {/* Next Button */}
+        <input
+        id="lastName"
+        type="text"
+        name="lastName"
+        placeholder="Last name"
+        value={formData.lastName}
+        onChange={handleChange}
+        onBlur={handleBlur}
+        className={`w-full py-2 px-4 border rounded-md outline-none focus:ring-2 ${
+        errors.lastName
+        ? "border-red-500 focus:ring-red-500"
+        : "border-gray-300 focus:ring-blue-500"
+        }`}
+        />
+        {errors.lastName && touched.lastName && (
+        <p className="text-red-500 text-sm mt-1">
+            {errors.lastName}
+        </p>
+        )}
+        </div>
+         {/* Next Button */}
         <button
-            type="submit"
-            disabled={isSubmitting || !isStep1Valid()}
-            className="w-full bg-[#1983d5] text-white py-2 rounded-full hover:bg-blue-700 
-            transition flex justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+        type="submit"
+        disabled={isSubmitting || !isStep1Valid()}
+        className="w-full bg-[#1983d5] text-white py-2 rounded-full hover:bg-blue-700 
+        transition flex justify-center disabled:opacity-50 disabled:cursor-not-allowed"
         >
-            {isSubmitting ? (
-                <span className="animate-spin">↻</span>
-            ) : (
-                <h6>Next</h6>
-            )}
+        {isSubmitting ? (
+        <span className="animate-spin">↻</span>
+        ) : (
+       <h6>Next</h6>
+        )}
         </button>
 
         {/* Divider */}
@@ -348,14 +348,14 @@ function Signup() {
 
         {/* Google */}
         <button
-            type="button"
-            className="w-full flex items-center justify-center gap-3 cursor-pointer 
-            border border-gray-300 py-3 rounded-md hover:bg-gray-100"
+        type="button"
+        className="w-full flex items-center justify-center gap-3 cursor-pointer 
+        border border-gray-300 py-3 rounded-md hover:bg-gray-100"
         >
         <img
-            src="https://www.svgrepo.com/show/475656/google-color.svg"
-            alt="Google"
-            className="w-5 h-5"
+        src="https://www.svgrepo.com/show/475656/google-color.svg"
+        alt="Google"
+        className="w-5 h-5"
         />
         <span className="google">Google</span>
         </button>
@@ -363,168 +363,167 @@ function Signup() {
 
         {/* Footer Links */}
         <div className="flex justify-center gap-4 mt-4 text-xs text-gray-400">
-            <a href="#" className="hover:underline">
-                Help
-            </a>
-            <a href="#" className="hover:underline">
-                Privacy
-            </a>
-            <a href="#" className="hover:underline">
-                Terms
-            </a>
+        <a href="#" className="hover:underline">
+            Help
+        </a>
+        <a href="#" className="hover:underline">
+            Privacy
+        </a>
+        <a href="#" className="hover:underline">
+            Terms
+        </a>
         </div>
-            </>
+         </>
      ) : (
-    <div className="w-full max-w-md mx-auto">
-        <button
-            onClick={handleBack}
-            className="text-base mb-4 flex gap-2 items-center cursor-pointer text-gray-500 hover:text-blue-500"
-        >
-            <ArrowLeft size={24} /> Back
-        </button>
-        <h1 className="font-semibold text-2xl mb-2 sm:mb-4 sm:text-3xl text-black leading-tight">
-            Create password
-        </h1>
-        <p className="text-sm text-gray-500 mb-6">
-            Do you have an account already?{" "}
-            <span className="text-blue-600 hover:underline cursor-pointer">
-                Sign In
-            </span>
-        </p>
+     <div className="w-full max-w-md mx-auto">
+    <button
+    onClick={handleBack}
+    className="text-base mb-4 flex gap-2 items-center cursor-pointer text-gray-500 hover:text-blue-500"
+    >
+    <ArrowLeft size={24} /> Back
+    </button>
+    <h1 className="font-semibold text-2xl mb-2 sm:mb-4 sm:text-3xl text-black leading-tight">
+        Create password
+    </h1>
+    <p className="text-sm text-gray-500 mb-6">
+     Do you have an account already?{" "}
+    <span className="text-blue-600 hover:underline cursor-pointer">
+    Sign In
+    </span>
+    </p>
+    <form onSubmit={handleSubmit} className="space-y-4">
+    {/* Password Field */}
+    <div className="relative">
+    <input
+    type={
+        showPassword ? "text" : "password"
+    }
+    name="password"
+    placeholder="Password"
+    value={formData.password}
+    onChange={handleChange}
+    onBlur={handleBlur}
+    className={`w-full p-2 sm:p-3 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none ${
+    errors.password
+    ? "border-red-500"
+    : "border-gray-300"
+    }`}
+  />
+ <button
+    type="button"
+    onClick={togglePasswordVisibility}
+    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
+>
+    {showPassword ? (
+        <EyeOff size={20} />
+    ) : (
+        <Eye size={20} />
+    )}
+    </button>
+    {errors.password && (
+    <p className="text-red-500 text-sm mt-1">
+        {errors.password}
+    </p>
+    )}
+    </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Password Field */}
-         <div className="relative">
-        <input
-            type={
-                showPassword ? "text" : "password"
-            }
-            name="password"
-            placeholder="Password"
-            value={formData.password}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            className={`w-full p-2 sm:p-3 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none ${
-                errors.password
-                    ? "border-red-500"
-                    : "border-gray-300"
-            }`}
-/>
-        <button
-            type="button"
-            onClick={togglePasswordVisibility}
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
-        >
-            {showPassword ? (
-                <EyeOff size={20} />
-            ) : (
-                <Eye size={20} />
-            )}
-        </button>
-        {errors.password && (
-        <p className="text-red-500 text-sm mt-1">
-            {errors.password}
-        </p>
-        )}
-      </div>
-
-        {/* Password Strength */}
-        <div className="mt-2">
-        <div className="flex items-center gap-2 text-sm">
-        <span>Password strength:</span>
-        <span
-            className={`font-medium ${passwordStrength.textColor}`}
-        >
-            {passwordStrength.message}
-        </span>
-        </div>
+    {/* Password Strength */}
+    <div className="mt-2">
+    <div className="flex items-center gap-2 text-sm">
+    <span>Password strength:</span>
+    <span
+        className={`font-medium ${passwordStrength.textColor}`}
+    >
+    {passwordStrength.message}
+    </span>
+    </div>
 
    {formData.password && (
     <ul className="mt-2 text-xs text-gray-600 space-y-1">
-        <li className="flex items-center gap-1">
-            {formData.password.length >=
-            8 ? (
-                <Check
-                    className="text-green-500"
-                    size={14}
-                />
-            ) : (
-                <X
-                    className="text-red-500"
-                    size={14}
-                />
-            )}
-            <span>
-                At least 8 characters
-            </span>
-        </li>
-        <li className="flex items-center gap-1">
-        {formData.password.match(
-            /[A-Z]/
-        ) ? (
-            <Check
-                className="text-green-500"
-                size={14}
-            />
-        ) : (
-        <X
-            className="text-red-500"
-            size={14}
-        />
-        )}
-        <span>
-            At least one uppercase
-            letter
-        </span>
+    <li className="flex items-center gap-1">
+    {formData.password.length >=
+    8 ? (
+    <Check
+    className="text-green-500"
+    size={14}
+    />
+     ) : (
+    <X
+    className="text-red-500"
+    size={14}
+    />
+    )}
+    <span>
+    At least 8 characters
+    </span>
+     </li>
+    <li className="flex items-center gap-1">
+    {formData.password.match(
+        /[A-Z]/
+    ) ? (
+    <Check
+    className="text-green-500"
+    size={14}
+    />
+    ) : (
+    <X
+    className="text-red-500"
+    size={14}
+    />
+    )}
+    <span>
+    At least one uppercase
+    letter
+    </span>
         </li>
     <li className="flex items-center gap-1">
-        {formData.password.match(
-            /[0-9]/
-        ) ? (
-            <Check
-                className="text-green-500"
-                size={14}
-            />
-        ) : (
-            <X
-                className="text-red-500"
-                size={14}
-            />
-        )}
-        <span>At least one number</span>
+    {formData.password.match(
+        /[0-9]/
+    ) ? (
+    <Check
+        className="text-green-500"
+        size={14}
+    />
+    ) : (
+    <X
+    className="text-red-500"
+    size={14}
+    />
+    )}
+    <span>At least one number</span>
     </li>
     <li className="flex items-center gap-1">
-        {formData.password.match(
-            /[^A-Za-z0-9]/
-        ) ? (
-            <Check
-                className="text-green-500"
-                size={14}
-            />
-        ) : (
-<X
-                className="text-red-500"
-                size={14}
-            />
-        )}
-<li
-                className={
-                    passwordChecks.special
-                        ? "text-blue-600 font-medium"
-                        : ""
-                }
-            ></li>
-            <span>
-                At least one special
-                character
-            </span>
-        </li>
+    {formData.password.match(
+    /[^A-Za-z0-9]/
+    ) ? (
+    <Check
+    className="text-green-500"
+    size={14}
+    />
+    ) : (
+    <X
+    className="text-red-500"
+    size={14}
+     />
+    )}
+   <li
+    className={
+   passwordChecks.special
+    ? "text-blue-600 font-medium"
+    : ""
+    }
+     ></li>
+    <span>
+    At least one special
+    character
+    </span>
+    </li>
     </ul>
-        )}
+    )}
     </div>
 
-                    {/* Terms Agreement */}
-<div className="flex items-start space-x-3 mt-6 text-xs sm:text-sm text-gray-600">
+  {/* Terms Agreement */}
+  <div className="flex items-start space-x-3 mt-6 text-xs sm:text-sm text-gray-600">
     <input
         type="checkbox"
         checked={agreed}
@@ -533,39 +532,40 @@ function Signup() {
         required
     />
     <span className="leading-tight">
-        I agree to DS Legal's Consumer{" "}
-        <a
-            href="#"
-className="text-blue-600 underline"
->
-                Terms and Usage Policy
-            </a>{" "}
-            and acknowledge our{" "}
-            <a
-                href="#"
-                className="text-blue-600 underline"
-            >
-                Privacy Policy
-            </a>
-        </span>
+    I agree to DS Legal's Consumer{" "}
+     <a
+    href="#"
+     className="text-blue-600 underline"
+     >
+     Terms and Usage Policy
+    </a>{" "}
+     and acknowledge our{" "}
+    <a
+    href="#"
+    className="text-blue-600 underline"
+     >
+     Privacy Policy
+    </a>
+    </span>
     </div>
 
-            {/* Submit */}
-            <button
-                type="submit"
-                disabled={isSubmitting || !agreed}
-                className="w-full bg-blue-600 text-white py-2 sm:py-3 rounded-full hover:bg-blue-700 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-                {isSubmitting
-                    ? <div className="spinner border-white"></div>
-                    : "Sign Up"}
-            </button>
-                </form>
-            </div>
-        )}
-                </div>
-            </div>
-        </div>
+     {/* Submit */}
+    <button
+    type="submit"
+    disabled={isSubmitting || !agreed}
+    className="w-full bg-blue-600 text-white py-2 sm:py-3 
+    rounded-full hover:bg-blue-700 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+    >
+    {isSubmitting
+     ?  <div className="spinner border-white"></div>
+    : "Sign Up"}
+     </button>
+    </form>
+     </div>
+     )}
+    </div>
+    </div>
+    </div>
     );
 }
 

@@ -1,23 +1,42 @@
 import { FaPlus } from "react-icons/fa";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Filter from "../components/common/Filter";
 import { useTask } from "../store/task.context";
 import Task from "../components/Task";
 import Skeleton from "react-loading-skeleton";
 import 'react-loading-skeleton/dist/skeleton.css';
+import TaskModal from "../components/TaskModal";
+import { GetSingleTask } from "../api/task_api";
 
 function Tasks() {
   const { getAllTask, task, loading } = useTask();
+  const [showModal, setShowModal] = useState(false);
+  const [selectedTask, setSelectedTask] = useState();
+  const [singleLoading, setSingleLoading] = useState(false); 
+
   const tasks = Array.isArray(task) ? task : [];
 
   useEffect(() => {
     getAllTask();
   }, []);
 
+  const getSingleBlog = async (id) => {
+    setShowModal(true);      // show the modal immediately
+    setSingleLoading(true);  // show loading skeleton
+    try {
+      const task = await GetSingleTask(id);
+      setSelectedTask(task.data);
+    } catch (error) {
+      console.error("Failed to fetch single task", error);
+    } finally {
+      setSingleLoading(false); // hide loading
+    }
+  };
+
   return (
     <>
-    <div className="px-8 py-4 overflow-x-hidden">
+      <div className="px-8 py-4 overflow-x-hidden">
         <div className="flex justify-between lg:flex-row flex-col gap-4">
           <div>
             <h4 className="text-[24px] font-[600] text-[#000000]">Task board</h4>
@@ -51,11 +70,26 @@ function Tasks() {
             </div>
           ) : (
             tasks.map((task, id) => (
-              <Task task={task} index={id} key={task.id || id} />
+              <Task showModal={setShowModal} task={task} index={id} key={task.id || id} getblog={getSingleBlog} />
             ))
           )}
         </div>
       </div>
+
+      {showModal && (
+        singleLoading ? (
+          <div className="fixed inset-0 bg-opacity-30 flex items-center justify-center z-50">
+            <div className="bg-white p-6 w-full max-w-3xl shadow-lg rounded-2xl">
+              <Skeleton height={30} width="50%" />
+              <Skeleton count={4} className="mt-4" />
+              <Skeleton height={50} className="mt-6" />
+              <Skeleton height={50} className="mt-2" />
+            </div>
+          </div>
+        ) : (
+          <TaskModal showModal={setShowModal} task={selectedTask} />
+        )
+      )}
     </>
   );
 }

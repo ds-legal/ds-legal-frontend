@@ -1,12 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { HiDotsVertical } from "react-icons/hi";
 import { MdOutlineSdCard } from "react-icons/md";
 import { PiNote } from "react-icons/pi";
 import { CiClock1 } from "react-icons/ci";
 
-const Task = ({ task }) => {
-  const status = task.status.toLowerCase();
+const Task = ({ task , showModal,getblog }) => {
 
+  
+  const status = task.status.toLowerCase();
   // Time logic
   const dueDate = new Date(task.due_date);
   const now = new Date();
@@ -31,7 +32,9 @@ const Task = ({ task }) => {
   }
 
   return (
-    <div  className='bg-white shadow px-6 py-6 rounded-md'>
+    <div 
+    onClick={() =>{showModal(true),getblog(task.id)}}
+     className='bg-white shadow px-6 py-6 rounded-md'>
       <div className='flex justify-between'>
         <h2 className='text-[16px] font-[600] heading-jakarta'>{task.title}</h2>
         <div className='flex items-center gap-1'>

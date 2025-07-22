@@ -39,7 +39,7 @@ const LoginForm = () => {
      if(response.status_code === 200){
       setILoading(false)
        toast.success(response.message)
-       navigate("/")
+       navigate("/dashboard")
        setErrors(false) 
        
      }else{
@@ -67,7 +67,7 @@ const LoginForm = () => {
       </h1>
       <h5 className="text-[#645D5D] text-[14px] font-[400] mb-6">
         Don’t have an account?{" "}
-        <Link className="text-[#1983D5]" to="#">Sign up</Link>
+        <Link className="text-[#1983D5]" to="/signup">Sign up</Link>
       </h5>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -111,6 +111,7 @@ const LoginForm = () => {
 
         {/* Submit Button */}
         <button
+        disabled={isLoading}
           type="submit"
           className={`w-full px-2 py-3 rounded-[40px] text-white text-sm font-semibold transition ${
             hasErrors ? "bg-red-500" : "bg-[#1983D5] hover:bg-[#157BCB]"
@@ -140,13 +141,18 @@ const LoginForm = () => {
       </div>
 
       {/* Google Button */}
-      <button
-        type="button"
-        className="w-full px-2 py-3 rounded-[40px] bg-white border border-gray-300 flex items-center justify-center gap-2 text-[#101928] text-sm font-semibold hover:bg-gray-50 transition"
-      > {}
-        <SiGoogle className="h-4 w-4 text-[#DB4437]" />
-        Continue with Google
-      </button>
+       <button
+            type="button"
+            className="w-full flex items-center justify-center gap-3 cursor-pointer 
+            border border-gray-300 py-3 rounded-[40px] hover:bg-gray-100"
+        >
+        <img
+            src="https://www.svgrepo.com/show/475656/google-color.svg"
+            alt="Google"
+            className="w-5 h-5"
+        />
+        <span className="google">Google</span>
+        </button>
 
       {/* Footer Links */}
       <div className="flex flex-wrap justify-center gap-4 mt-6 text-sm text-[#545454]">

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState } from 'react';
 
-const BaseUrl = "https://ds-legal-backend.onrender.com";
+const BaseUrl = import.meta.env.VITE_BaseUrl;
 
 
 const AuthContext = createContext();
@@ -11,6 +11,9 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(null);
   const [refreshToken, setRefreshToken] = useState(null);
 
+
+
+  
   // Login function (you are calling register endpoint but calling it Login)
   const RegisterUser = async (payload) => {
     console.log(payload , "payload" , payload.name)
@@ -75,7 +78,6 @@ export const AuthProvider = ({ children }) => {
     const response = await fetch (`${BaseUrl}//api/v1/auth/login`,{
       method:"POST"
     })
-
    }
 
   return (

@@ -61,7 +61,8 @@ const Filter = () => {
           </div>
           <div 
            onClick={() => setIsModalOpen(true)}
-          className="border border-[#E4E7EC] px-4 rounded-md bg-[#F9FAFB] shadow-sm flex justify-between text-[12px] items-center">
+           className="border border-[#E4E7EC] px-4 rounded-md bg-[#F9FAFB] 
+           shadow-sm flex justify-between text-[12px] items-center">
             <h4 className="text-[#344054] text-[12px]">Sort by</h4>
            <span  className="text-[30px] font-semibold"> <CgSortAz /></span>
           </div>

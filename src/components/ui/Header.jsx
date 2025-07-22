@@ -1,6 +1,7 @@
 import { ChevronDown, Search, Bell, User, Home } from "lucide-react";
 import { NAV_ITEMS } from "./Sidebar";
 import { useLocation } from "react-router-dom";
+import logo from "../../assets/logo-color.png";
 
 const Header = () => {
     const location = useLocation();
@@ -13,15 +14,28 @@ const Header = () => {
     );
 
     return (
-        <header className="sticky top-0 max-h-fit flex items-center justify-between gap-6 py-4 px-8 bg-white shadow-sm">
-            {/* Left side - Dynamic Icon + Page name */}
-            <div className="flex items-center space-x-2">
+        <header className="sticky top-0 w-full flex items-center justify-between px-4 py-4 bg-white shadow-sm z-50">
+            {/* Left side - Logo on mobile + Page name and icon */}
+            <div className="flex items-center gap-3">
+                {/* Logo - Show only on small screens */}
+               
+
+                {/* Active page icon and name */}
                 {activePageItem ? (
                     <>
-                        <activePageItem.Icon className="h-5 w-5 text-gray-600" />
+                   <div className="flex gap-2 items-center">
+                     <div className=" w-6 pt-1">
+                     <img
+                    src={logo}
+                    alt="logo"
+                    className="h-12 w-full object-contain block sm:hidden"
+                      />
+                      </div>
+                        <activePageItem.Icon className="h-5 w-5 text-gray-600 hidden lg:flex" />
                         <span className="text-lg font-semibold">
                             {activePageItem.name}
                         </span>
+                   </div>
                     </>
                 ) : (
                     <>
@@ -31,11 +45,13 @@ const Header = () => {
                 )}
             </div>
 
-            {/* Right side - Search, Notifications, User dropdown */}
+            {/* Right side - Search, Notifications, User */}
             <div className="flex items-center space-x-2 sm:space-x-4">
-                {/* Search - Mobile icon only, desktop full input */}
+                {/* Search */}
                 <div className="flex items-center">
+                    {/* Mobile icon */}
                     <Search className="block sm:hidden h-6 w-6 text-[#798394]" />
+                    {/* Desktop input */}
                     <div className="hidden sm:block relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#798394]" />
                         <input

@@ -14,7 +14,7 @@ function Dashboard() {
   const today = format(new Date(), 'PPP');
 
   return (
-    <div className="lg:px-8 py-4 px-3  overflow-y-scroll z-10 ">
+    <div className="lg:px-8 py-4 px-3  overflow-y-scroll z-10 max-h-full ">
         {/* welcome sectio */}
       <div className="flex justify-between items-center">
         <div className="flex flex-col">
@@ -135,10 +135,10 @@ function Dashboard() {
         </div>
         <div className='flex gap-1 items-center '>
           <h5 className='text-[12px] font-[500] font-[#54577A]'>Priority:</h5>
-        <div className=' flex'>
+        <div className=' flex items-center gap-1'>
            <span className='text-orange-300'>    <IoIosArrowUp /></span>
            <span className='text-[12px] font-[500] font-[#54577A]'>Highest</span>
-           <div className='flex gap-1'>
+           <div className='flex gap-1 items-center'>
                <span>
               <MdOutlineSdCard />
               </span>

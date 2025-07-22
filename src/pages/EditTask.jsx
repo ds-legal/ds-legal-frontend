@@ -1,13 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Nav from '../components/ui/Nav';
-import { MdArrowBackIosNew } from "react-icons/md";
+import { MdArrowBackIosNew, MdOutlineStickyNote2 } from "react-icons/md";
 import { FiChevronDown, FiChevronUp } from 'react-icons/fi';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useTask } from '../store/task.context';
 import toast from 'react-hot-toast';
+import { FaPlus } from "react-icons/fa6";
+import { SiTheirishtimes } from 'react-icons/si';
+import { TiTimes } from "react-icons/ti";
+import { GetSingleTask } from '../api/task_api';
 
-const CreateTasks = () => {
-  const { createTask , getAllTask} = useTask();
+const EditTasks = () => {
+  const { updateTask, getAllTask} = useTask();
+  const { id } = useParams();
+  const navigate = useNavigate();
 
   const [showDays, setShowDays] = useState(false);
   const [selectedDay, setSelectedDay] = useState(null);
@@ -21,6 +27,41 @@ const CreateTasks = () => {
   const [category, setCategory] = useState('');
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  // Load task data when component mounts
+  useEffect(() => {
+    const loadTaskData = async () => {
+      if (id) {
+        try {
+          const taskData = await GetSingleTask(id);
+          if (taskData && taskData.data) {
+            const task = taskData.data;
+            setTitle(task.title || '');
+            setDescription(task.description || '');
+            setCategory(task.category || '');
+            setPriority(task.priority || 'high');
+            setSelectedStatus(task.status || 'pending');
+            
+            // Handle due_date
+            if (task.due_date) {
+              const dueDate = new Date(task.due_date);
+              setDate(dueDate.toISOString().split('T')[0]);
+              setTime(dueDate.toTimeString().split(' ')[0].substring(0, 5));
+            }
+          }
+        } catch (error) {
+          console.error('Error loading task data:', error);
+          toast.error('Failed to load task data');
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadTaskData();
+  }, [id]);
+
   const naviagate = useNavigate()
 
   const priorities = [ 'low', 'medium', 'high'];
@@ -40,7 +81,13 @@ const CreateTasks = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const toastId = toast.loading('Creating task...');
+    
+    if (!id) {
+      toast.error('Task ID is missing');
+      return;
+    }
+    
+    const toastId = toast.loading('Updating task...');
     let dueDate = null;
     if (date && time) {
       const combined = new Date(`${date}T${time}`);
@@ -52,32 +99,36 @@ const CreateTasks = () => {
       description,
       category,
       due_date: dueDate,
-      reminderDay: selectedDay,
       priority,
       status: selectedStatus,
     };
 
-    const response = await createTask(taskData);
-    if(response?.status_code === 201){
-      getAllTask()
-     toast.success(response.message, { id: toastId });
-     naviagate("/tasks")
+    try {
+      const response = await updateTask(id, taskData);
+      console.log('Update response:', response); // Debug log
+      
+      if(response?.ok || response?.status_code === 200 || response?.id || response?.data){
+        getAllTask();
+        toast.success('Task updated successfully!', { id: toastId });
+        naviagate("/tasks");
+      } else {
+        console.error('Update failed with response:', response);
+        toast.error('Failed to update task', { id: toastId });
+      }
+    } catch (error) {
+      console.error('Error updating task:', error);
+      toast.error('Failed to update task', { id: toastId });
     }
-    
-    // Reset form
-    setTitle('');
-    setDescription('');
-    setCategory('');
-    setDate('');
-    setTime('');
-    setSelectedDay(null);
-    setPriority('high');
-    setSelectedStatus('completed');
   };
 
   return (
     <>
       <Nav />
+      {loading ? (
+        <div className='lg:w-[80%] w-[90%] mx-auto my-10 flex justify-center items-center h-64'>
+          <div className='text-lg'>Loading task data...</div>
+        </div>
+      ) : (
       <div className='lg:w-[80%] w-[90%] mx-auto my-10'>
         <div className='flex justify-between'>
           <Link to="/tasks" className='flex items-center gap-1 text-[14px] text-[#667185] font-[500]'>
@@ -90,7 +141,7 @@ const CreateTasks = () => {
         </div>
 
         <div className='bg-white shadow-lg lg:w-[70%] w-full mx-auto px-10 py-10'>
-          <h2 className='text-[24px] font-semibold mb-6'>Create Task</h2>
+          <h2 className='text-[24px] font-semibold mb-6'>Edit Task</h2>
 
           <form className='space-y-6' onSubmit={handleSubmit}>
             <div>
@@ -149,7 +200,7 @@ const CreateTasks = () => {
             </div>
 
             {/* Reminder Dropdown */}
-            {/* <div>
+            <div>
               <label className="text-sm text-[#475367] font-medium ">Reminder (Before)</label>
               <div className="relative mt-1">
                 <div
@@ -164,7 +215,7 @@ const CreateTasks = () => {
                     {Array.from({ length: 31 }, (_, i) => (
                       <button
                         key={i}
-      ]      type="button"
+                      type="button"
                         className="w-full text-left px-4 py-2 hover:bg-gray-100"
                         onClick={() => handleSelectDay(i + 1)}
                       >
@@ -174,7 +225,7 @@ const CreateTasks = () => {
                   </div>
                 )}
               </div>
-            </div> */}
+            </div> 
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Priority */}
@@ -243,11 +294,85 @@ const CreateTasks = () => {
                 </div>
               </div>
             </div>
+
+            {/* Attach notes */}
+            <div>
+              <div className=' flex gap-4 items-center'>
+            <h3 className='text-[#1983D5] text-[16px]'>Attach notes</h3>
+            <FaPlus className='text-[#1983D5] text-[16px]' />
+             </div>
+             <div className='   flex mt-4  gap-2 flex-col'>
+              <div className=' flex  gap-12 font-bold items-center'>
+            <div className=' flex gap-2 items-center text-[#CECECE]'>
+            <MdOutlineStickyNote2 />
+            <h5 className='text-[14px]'>Note</h5>
+            </div>
+             <TiTimes className='text-[#CECECE] ' />     
+              </div>
+               <div className=' flex  gap-12 font-bold items-center'>
+            <div className=' flex gap-2 items-center text-[#CECECE]'>
+            <MdOutlineStickyNote2 />
+            <h5 className='text-[14px]'>Note</h5>
+            </div>
+             <TiTimes className='text-[#CECECE] ' />     
+              </div>
+               <div className=' flex  gap-12 font-bold items-center'>
+            <div className=' flex gap-2 items-center text-[#CECECE]'>
+            <MdOutlineStickyNote2 />
+            <h5 className='text-[14px]'>Note</h5>
+            </div>
+             <TiTimes className='text-[#CECECE] ' />     
+              </div> 
+               <h3 className='text-[#475367] mt-4 text-[14px] font-bold'>Attachments</h3>     
+            </div>         
+            </div>
+            {/* Attachment */}
+
+             <div>
+              <div className=' flex gap-4 items-center'>
+            <h3 className='text-[#1983D5] text-[16px]'>Add Attachments</h3>
+            <FaPlus className='text-[#1983D5] text-[16px]' />
+             </div>
+             <div className='   flex mt-4  gap-2 flex-col'>
+              <div className=' flex  gap-8 font-bold items-center'>
+            <div className=' flex gap-2 items-center text-[#CECECE]'>
+            <MdOutlineStickyNote2 />
+            <h5 className='text-[14px]'>Attachment 1</h5>
+            </div>
+             <TiTimes className='text-[#CECECE] ' />     
+              </div>
+               <div className=' flex  gap-8 font-bold items-center'>
+            <div className=' flex gap-2 items-center text-[#CECECE]'>
+            <MdOutlineStickyNote2 />
+            <h5 className='text-[14px]'>Attachment 2</h5>
+            </div>
+             <TiTimes className='text-[#CECECE] ' />     
+              </div>        
+            </div>         
+            </div>
+
+            <div>
+               <h3 className='text-[#475367] text-[14px]'>Attach Invoice</h3> 
+                <select
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className='w-full bg-[#EFF1F3] border-2 border-[#D0D5DD] rounded-md p-3 mt-1'
+              >
+                <option value="">Select what you want to pay for</option>
+                <option value="work">Work</option>
+                <option value="personal">Personal</option>
+                <option value="urgent">Urgent</option>
+              </select> 
+            </div>
+
+            
+
           </form>
         </div>
       </div>
+      )}
     </>
   );
 };
 
-export default CreateTasks;
+export default EditTasks;
