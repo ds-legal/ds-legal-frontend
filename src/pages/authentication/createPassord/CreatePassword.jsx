@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import Logo from "../../../assets/logo-color.png";
 import { changePassword } from '../../../api/auth_api';
 import toast from 'react-hot-toast';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
+import logoColor from '../../../assets/logo-color.png';
 
 const CreatePassword = () => {
   const [newPassword, setNewPassword] = useState("");
@@ -40,7 +40,7 @@ const CreatePassword = () => {
       toast.error("Passwords do not match.");
       return;
     }
- setLoading(true)
+    setLoading(true)
     try {
       const response = await changePassword({
         new_password: newPassword,
@@ -60,101 +60,106 @@ const CreatePassword = () => {
       toast.error("Failed to change password.");
       console.error("error", error);
     }finally{
-       setLoading(true)
+       setLoading(false)
     }
   };
 
   return (
-    <div className='h-screen w-full flex items-center justify-center bg-gray-50 px-4 overflow-hidden'>
-      <div className='w-full lg:max-w-md bg-white p-6 sm:p-8 rounded-lg shadow-md overflow-hidden'>
-
+    <div className='min-h-screen flex items-center justify-center bg-gray-50 px-4 py-4 sm:py-8'>
+      <div className='w-full max-w-sm sm:max-w-md bg-white p-4 sm:p-6 lg:p-8 rounded-lg shadow-sm border'>
         {/* Logo */}
-        <div className='flex justify-start mb-6'>
-          <img src={Logo} alt='logo' className='h-10 w-10' />
+        <div className='flex justify-center mb-6 sm:mb-8'>
+          <img 
+            src="/logo-color.png" 
+            alt="DS Legal" 
+            className="h-12 w-auto" 
+          />
         </div>
 
         {/* Heading */}
-        <h1 className='text-xl sm:text-2xl md:text-3xl font-semibold text-[#101928] mb-6'>
+        <h1 className='text-lg sm:text-xl lg:text-2xl font-semibold text-gray-900 text-center mb-6 sm:mb-8'>
           Create New Password
         </h1>
 
         {/* New Password */}
-        <div className='mb-4'>
-          <label className='text-sm text-[#645D5D] mb-2'>New Password</label>
-          <div className='relative'>
-            <input
-              type={showNewPassword ? 'text' : 'password'}
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              className='w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1983D5] pr-10'
-              placeholder='Enter your new password'
-            />
-            <span
-              onClick={() => setShowNewPassword((prev) => !prev)}
-              className='absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-500'
-            >
-              {showNewPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
-            </span>
-          </div>
-
-          {/* Strength Bar */}
-          <div className="flex justify-start gap-1 mt-2 mb-2">
-            {[...Array(5)].map((_, idx) => (
-              <span
-                key={idx}
-                className={`h-1.5 w-4 rounded-full transition-all duration-300 ${
-                  idx < passwordCriteriaMet ? 'bg-green-500' : 'bg-gray-300'
-                }`}
+        <div className='space-y-4 sm:space-y-6'>
+          <div>
+            <label className='block text-sm font-medium text-gray-700 mb-2'>Password</label>
+            <div className='relative'>
+              <input
+                type={showNewPassword ? 'text' : 'password'}
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                className='w-full px-3 sm:px-4 py-2.5 sm:py-3 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base'
+                placeholder='**********'
               />
-            ))}
+              <span
+                className='absolute right-3 top-[42px] cursor-pointer text-gray-500'
+                onClick={() => setShowNewPassword((prev) => !prev)}
+              >
+                {showNewPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+              </span>
+            </div>
+
+            {/* Strength Bar */}
+            <div className="flex gap-1 mt-3">
+              {[...Array(5)].map((_, idx) => (
+                <div
+                  key={idx}
+                  className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${
+                    idx < passwordCriteriaMet ? 'bg-green-500' : 'bg-gray-300'
+                  }`}
+                />
+              ))}
+            </div>
+
+            {/* Strength Rules */}
+            <ul className="text-xs sm:text-sm text-gray-600 mt-4 space-y-1">
+              <li className={/\d/.test(newPassword) ? 'text-green-600' : ''}>one number</li>
+              <li className={/[A-Z]/.test(newPassword) ? 'text-green-600' : ''}>one uppercase letter</li>
+              <li className={/[a-z]/.test(newPassword) ? 'text-green-600' : ''}>one lowercase letter</li>
+              <li className={/[!@#$%^&*(),.?":{}|<>]/.test(newPassword) ? 'text-green-600' : ''}>A special character (!@#$%^&*)</li>
+            </ul>
           </div>
 
-          {/* Strength Rules */}
-          <ul className="text-sm text-gray-500 list-disc ml-5 space-y-1">
-            <li className={/\d/.test(newPassword) ? 'text-green-600' : ''}>At least one number</li>
-            <li className={/[A-Z]/.test(newPassword) ? 'text-green-600' : ''}>At least one uppercase letter</li>
-            <li className={/[a-z]/.test(newPassword) ? 'text-green-600' : ''}>At least one lowercase letter</li>
-            <li className={/[!@#$%^&*(),.?":{}|<>]/.test(newPassword) ? 'text-green-600' : ''}>At least one special character</li>
-            <li className={newPassword.length >= 8 ? 'text-green-600' : ''}>Minimum of 8 characters</li>
-          </ul>
-        </div>
-
-        {/* Confirm Password */}
-        <div className='mb-6'>
-          <label className='text-sm text-[#645D5D] mb-2'>Confirm Password</label>
-          <div className='relative'>
-            <input
-              type={showConfirmPassword ? 'text' : 'password'}
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className='w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1983D5] pr-10'
-              placeholder='Confirm your new password'
-            />
-            <span
-              onClick={() => setShowConfirmPassword((prev) => !prev)}
-              className='absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-500'
-            >
-              {showConfirmPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
-            </span>
+          {/* Confirm Password */}
+          <div>
+            <label className='block text-sm font-medium text-gray-700 mb-2'>Confirm Password</label>
+            <div className='relative'>
+              <input
+                type={showConfirmPassword ? 'text' : 'password'}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className='w-full px-3 sm:px-4 py-2.5 sm:py-3 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base'
+                placeholder='Confirm your new password'
+              />
+              <span
+                className='absolute right-3 top-[42px] cursor-pointer text-gray-500'
+                onClick={() => setShowConfirmPassword((prev) => !prev)}
+              >
+                {showConfirmPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+              </span>
+            </div>
           </div>
         </div>
 
         {/* Continue Button */}
         <button
           onClick={handleSubmit}
-          className='w-full py-3 bg-[#1983D5] text-white font-semibold rounded-full hover:bg-[#1570B5] transition'
+          className='w-full bg-blue-600 text-white py-2.5 sm:py-3 rounded-lg font-semibold hover:bg-blue-700 transition mt-6 sm:mt-8 text-sm sm:text-base'
         >
-          {
-            loading ?  <div className="spinner border-white"></div> : <><span>Continue</span></>
-          }
-          
+          {loading ? (
+            <div className="spinner border-white"></div>
+          ) : (
+            <span>Next</span>
+          )}
         </button>
 
         {/* Footer links */}
-        <div className="flex flex-wrap justify-center sm:justify-end gap-4 mt-6 text-sm text-[#545454]">
-          <span className="cursor-pointer hover:underline">Help</span>
-          <span className="cursor-pointer hover:underline">Privacy</span>
-          <span className="cursor-pointer hover:underline">Terms</span>
+        <div className="flex justify-center gap-4 sm:gap-6 mt-6 sm:mt-8 text-xs sm:text-sm text-gray-500">
+          <a href="#" className="hover:underline">Help</a>
+          <a href="#" className="hover:underline">Privacy</a>
+          <a href="#" className="hover:underline">Terms</a>
         </div>
       </div>
     </div>

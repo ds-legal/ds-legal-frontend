@@ -1,6 +1,6 @@
-import logo from "../../assets/logo-white.png";
+import logo from "../../assets/logo-color.png";
 
-export default function LogoWhite() {
+export default function LogoColor() {
     return (
         <>
             <div className="flex items-center gap-2">
@@ -8,4 +8,4 @@ export default function LogoWhite() {
             </div>
         </>
     );
-}
+} 

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import Logo from "../../../assets/logo-color.png";
 import { resetPassword } from '../../../api/auth_api';
 import PasswordModal from '../../../components/common/PasswordModal';
+import LogoColor from '../../../components/common/LogoColor';
 import toast from 'react-hot-toast';
 
 const PasswordRecovery = () => {
@@ -12,7 +12,6 @@ const PasswordRecovery = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault(); 
-    // console.log("email", email)
     setModal(true)
     setLoading(true)
     try {
@@ -33,34 +32,35 @@ const PasswordRecovery = () => {
   };
 
   return (
-    <div className='h-screen w-full flex items-center justify-center bg-gray-50 px-4 overflow-hidden'>
-      <div className='w-full lg:max-w-md bg-white p-6 sm:p-8 rounded-lg shadow-md overflow-hidden'>
+    <div className='min-h-screen flex items-center justify-center bg-gray-50 px-4 py-4 sm:py-8'>
+      <div className='w-full max-w-sm sm:max-w-md bg-white p-4 sm:p-6 lg:p-8 rounded-lg shadow-sm border'>
         {/* Logo */}
-        <div className='flex justify-start mb-6'>
-          <img src={Logo} alt='logo' className='h-10 w-10' />
+        <div className='flex justify-center mb-6 sm:mb-8'>
+          <LogoColor />
         </div>
+        
         {/* Heading */}
-        <h1 className='text-xl sm:text-2xl md:text-3xl font-semibold text-[#101928] mb-2'>
+        <h1 className='text-lg sm:text-xl lg:text-2xl font-semibold text-gray-900 text-center mb-2'>
           Recover Password
         </h1>
 
-        {/* Paragraph */}
-        <p className='text-sm sm:text-base text-[#645D5D] mb-6'>
+        {/* Description */}
+        <p className='text-sm sm:text-base text-gray-600 text-center mb-6 sm:mb-8'>
           Enter your email to reset your password.
         </p>
 
         {/* Form */}
-        <form onSubmit={handleSubmit}>
-          <div className='mb-4'>
-            <label className='text-sm text-[#645D5D] mb-2'>
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+          <div>
+            <label className='block text-sm font-medium text-gray-700 mb-2'>
               Email Address
             </label>
             <input
               type='email'
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className='w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1983D5]'
-              placeholder='you@example.com'
+              className='w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base'
+              placeholder='email@dslegal.com'
               required
             />
           </div>
@@ -68,29 +68,30 @@ const PasswordRecovery = () => {
           {/* Continue Button */}
           <button
             type='submit'
-            className='w-full py-3 bg-[#1983D5] text-white font-semibold rounded-full hover:bg-[#1570B5] transition'
+            className='w-full bg-blue-600 text-white py-2.5 sm:py-3 rounded-lg font-semibold hover:bg-blue-700 transition text-sm sm:text-base'
           >
-            {
-              loading  ?   <div className="spinner border-white"></div> :<>Continue</>
-            }
-       
+            {loading ? (
+              <div className="spinner border-white"></div>
+            ) : (
+              <span>Continue</span>
+            )}
           </button>
         </form>
 
         {/* Footer links */}
-        <div className="flex flex-wrap justify-center sm:justify-end gap-4 mt-6 text-sm text-[#545454]">
-          <span>Help</span>
-          <span>Privacy</span>
-          <span>Terms</span>
+        <div className="flex justify-center gap-4 sm:gap-6 mt-6 sm:mt-8 text-xs sm:text-sm text-gray-500">
+          <a href="#" className="hover:underline">Help</a>
+          <a href="#" className="hover:underline">Privacy</a>
+          <a href="#" className="hover:underline">Terms</a>
         </div>
       </div>
-      {
-        showModal &&(
-          <PasswordModal
+      
+      {showModal && (
+        <PasswordModal
           url={url}
-          setModal={setModal}/>
-        )
-      }
+          setModal={setModal}
+        />
+      )}
     </div>
   );
 };
