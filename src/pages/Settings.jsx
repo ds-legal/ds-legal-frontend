@@ -1,4 +1,73 @@
+import { useEffect, useState } from 'react';
+import { getUserProfile, updateUserProfile } from './authentication/../../api/auth_api';
+import toast from 'react-hot-toast';
+
 function Settings() {
+  const storedUser = JSON.parse(localStorage.getItem('user') || 'null');
+  const [profile, setProfile] = useState({
+    first_name: storedUser?.first_name || '',
+    last_name: storedUser?.last_name || '',
+    email: storedUser?.email || '',
+    firm_name: storedUser?.firm_name || '',
+    address: storedUser?.address || '',
+    state: storedUser?.state || '',
+    postal_code: storedUser?.postal_code || '',
+    phone_number: storedUser?.phone_number || '',
+  });
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      setLoading(true);
+      try {
+        const res = await getUserProfile();
+        if (res && res.data) {
+          setProfile({
+            first_name: res.data.first_name || '',
+            last_name: res.data.last_name || '',
+            email: res.data.email || '',
+            firm_name: res.data.firm_name || '',
+            address: res.data.address || '',
+            state: res.data.state || '',
+            postal_code: res.data.postal_code || '',
+            phone_number: res.data.phone_number || '',
+          });
+        }
+      } catch (error) {
+        toast.error('Failed to load profile');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProfile();
+  }, []);
+
+  const handleSave = async () => {
+    setLoading(true);
+    try {
+      const payload = {
+        first_name: profile.first_name,
+        last_name: profile.last_name,
+        email: profile.email,
+        firm_name: profile.firm_name,
+        address: profile.address,
+        state: profile.state,
+        postal_code: profile.postal_code,
+        phone_number: profile.phone_number,
+      };
+      const res = await updateUserProfile(payload);
+      if (res && res.status_code === 200) {
+        toast.success(res.message || 'Profile updated');
+      } else {
+        toast.error(res.detail || 'Failed to update profile');
+      }
+    } catch (error) {
+      toast.error('Failed to update profile');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       <div className="px-4 lg:px-8 py-4 max-w-full">
@@ -40,27 +109,56 @@ function Settings() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="text-[14px] font-normal text-[#101928]">First Name</label>
-              <input type="text" className="mt-1 w-full rounded-md border-2 border-[#D0D5DD] text-sm p-2" />
+              <input
+                type="text"
+                value={profile.first_name}
+                onChange={(e) => setProfile((p) => ({ ...p, first_name: e.target.value }))}
+                className="mt-1 w-full rounded-md border-2 border-[#D0D5DD] text-sm p-2"
+              />
             </div>
             <div>
               <label className="text-[14px] font-normal text-[#101928]">Last Name</label>
-              <input type="text" className="mt-1 w-full rounded-md border-2 border-[#D0D5DD] text-sm p-2" />
+              <input
+                type="text"
+                value={profile.last_name}
+                onChange={(e) => setProfile((p) => ({ ...p, last_name: e.target.value }))}
+                className="mt-1 w-full rounded-md border-2 border-[#D0D5DD] text-sm p-2"
+              />
             </div>
             <div>
               <label className="text-[14px] font-normal text-[#101928]">Email Address</label>
-              <input type="email" className="mt-1 w-full rounded-md border-2 border-[#D0D5DD] text-sm p-2" />
+              <input
+                type="email"
+                value={profile.email}
+                onChange={(e) => setProfile((p) => ({ ...p, email: e.target.value }))}
+                className="mt-1 w-full rounded-md border-2 border-[#D0D5DD] text-sm p-2"
+              />
             </div>
             <div>
               <label className="text-[14px] font-normal text-[#101928]">Firm Name</label>
-              <input type="text" className="mt-1 w-full rounded-md border-2 border-[#D0D5DD] text-sm p-2" />
+              <input
+                type="text"
+                value={profile.firm_name}
+                onChange={(e) => setProfile((p) => ({ ...p, firm_name: e.target.value }))}
+                className="mt-1 w-full rounded-md border-2 border-[#D0D5DD] text-sm p-2"
+              />
             </div>
             <div className="md:col-span-2">
               <label className="text-sm font-medium text-gray-700">Address</label>
-              <input type="text" className="mt-1 w-full rounded-md border-2 border-[#D0D5DD] text-sm p-2" />
+              <input
+                type="text"
+                value={profile.address}
+                onChange={(e) => setProfile((p) => ({ ...p, address: e.target.value }))}
+                className="mt-1 w-full rounded-md border-2 border-[#D0D5DD] text-sm p-2"
+              />
             </div>
             <div>
               <label className="text-sm font-medium text-gray-700">State</label>
-              <select className="mt-1 w-full rounded-md border-2 border-[#D0D5DD] text-sm p-2">
+              <select
+                value={profile.state}
+                onChange={(e) => setProfile((p) => ({ ...p, state: e.target.value }))}
+                className="mt-1 w-full rounded-md border-2 border-[#D0D5DD] text-sm p-2"
+              >
                 <option value="">Select state</option>
                 <option value="lagos">Lagos</option>
                 <option value="abuja">Abuja</option>
@@ -69,15 +167,29 @@ function Settings() {
             </div>
             <div>
               <label className="text-sm font-medium text-gray-700">Postal Code</label>
-              <input type="text" className="mt-1 w-full rounded-md border-2 border-[#D0D5DD] text-sm p-2" />
+              <input
+                type="text"
+                value={profile.postal_code}
+                onChange={(e) => setProfile((p) => ({ ...p, postal_code: e.target.value }))}
+                className="mt-1 w-full rounded-md border-2 border-[#D0D5DD] text-sm p-2"
+              />
             </div>
             <div className="md:col-span-2">
               <label className="text-sm font-medium text-gray-700">Phone Number</label>
-              <input type="tel" className="mt-1 w-full rounded-md border-2 border-[#D0D5DD] text-sm p-2" />
+              <input
+                type="tel"
+                value={profile.phone_number}
+                onChange={(e) => setProfile((p) => ({ ...p, phone_number: e.target.value }))}
+                className="mt-1 w-full rounded-md border-2 border-[#D0D5DD] text-sm p-2"
+              />
             </div>
             <div className="md:col-span-2 mt-4 flex justify-end">
-              <button className="bg-[#101928] text-white px-6 py-2 rounded-md hover:bg-opacity-90 text-sm">
-                Save
+              <button
+                onClick={handleSave}
+                disabled={loading}
+                className="bg-[#101928] text-white px-6 py-2 rounded-md hover:bg-opacity-90 text-sm disabled:opacity-60"
+              >
+                {loading ? 'Saving...' : 'Save'}
               </button>
             </div>
           </div>

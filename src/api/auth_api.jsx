@@ -93,6 +93,42 @@ export const UserLogOut = async () => {
       } catch (error) {
          console.log("Failed to verify email token", error)
       }
-    }
+   }
+      export const getUserProfile = async () => {
+         const token = localStorage.getItem('token');
+         try {
+            const res = await fetch(`${Base_url}/api/v1/users/profile`, {
+               method: 'GET',
+               headers: {
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${token}`,
+               },
+            });
+            const data = await res.json();
+            return data;
+         } catch (error) {
+            console.log('Failed to fetch profile', error);
+            throw error;
+         }
+      };
+
+      export const updateUserProfile = async (payload) => {
+         const token = localStorage.getItem('token');
+         try {
+            const res = await fetch(`${Base_url}/api/v1/users/profile`, {
+               method: 'PATCH',
+               headers: {
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${token}`,
+               },
+               body: JSON.stringify(payload),
+            });
+            const data = await res.json();
+            return data;
+         } catch (error) {
+            console.log('Failed to update profile', error);
+            throw error;
+         }
+      };
 
   

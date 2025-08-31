@@ -2,6 +2,8 @@ import { ChevronDown, Search, Bell, User, Home } from "lucide-react";
 import { NAV_ITEMS } from "./Sidebar";
 import { useLocation } from "react-router-dom";
 import logo from "../../assets/logo-color.png";
+import { useNavigate } from 'react-router-dom';
+import { UseAuth } from '../../store/auth.context';
 
 const Header = () => {
     const location = useLocation();
@@ -12,6 +14,9 @@ const Header = () => {
             location.pathname === item.link ||
             (item.link !== "/" && location.pathname.startsWith(item.link))
     );
+
+    const navigate = useNavigate();
+    const { user: authUser } = UseAuth();
 
     return (
         <header className="sticky top-0 w-full flex items-center justify-between px-4 py-4 bg-white shadow-sm z-50">
@@ -68,9 +73,13 @@ const Header = () => {
                 </button>
 
                 {/* User dropdown */}
-                <div className="flex items-center space-x-2 cursor-pointer">
-                    <div className="h-8 w-8 rounded-full bg-[#ffece5] flex items-center justify-center">
-                        <User className="h-4 w-4 text-black" />
+                <div className="flex items-center space-x-2 cursor-pointer" onClick={() => navigate('/settings')}>
+                    <div className="h-8 w-8 rounded-full bg-[#ffece5] flex items-center justify-center overflow-hidden">
+                        {authUser?.photo ? (
+                            <img src={authUser.photo} alt="user" className="w-full h-full object-cover" />
+                        ) : (
+                            <User className="h-4 w-4 text-black" />
+                        )}
                     </div>
                     <ChevronDown className="hidden sm:block h-4 w-4 text-gray-600" />
                 </div>

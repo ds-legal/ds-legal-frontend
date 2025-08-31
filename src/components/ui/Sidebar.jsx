@@ -13,6 +13,7 @@ import clsx from "clsx";
 import logo from "../../assets/newlogo.png";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import { UseAuth } from '../../store/auth.context';
 import { UserLogOut } from "../../api/auth_api";
 
 export const NAV_ITEMS = [
@@ -45,6 +46,7 @@ export default function Sidebar() {
     const location = useLocation();
     const [active, setActive] = useState("");
     const navigate = useNavigate()
+    const { user: authUser } = UseAuth();
 
     // Set initial active state based on current route
     useEffect(() => {
@@ -109,26 +111,28 @@ export default function Sidebar() {
             </div>
 
             {/* User Info Section */}
-            <div className="flex items-center gap-3 mt-10 border-t border-gray-700 pt-4">
-            <img
-                src="https://randomuser.me/api/portraits/women/44.jpg"
-                alt="User profile"
-                className="w-10 h-10 rounded-full object-cover"
-            />
-            <div className="flex flex-col text-sm">
-            <span className="font-semibold">Joan Legal</span>
-            <span className="text-gray-400 text-xs">
-                Joan@dslegal.com
-            </span>
-            </div>
-            <button
-            onClick={handleLogout}
-            className="ml-auto p-4 rounded-full hover:bg-gray-800 transition-colors cursor-pointer"
-            aria-label="Log out"
+            <div
+                className="flex items-center gap-3 mt-10 border-t border-gray-700 pt-4 cursor-pointer"
+                onClick={() => navigate('/settings')}
+                role="button"
             >
-            <LogOut size={18} />
-            </button>
+                <img
+                    src={authUser?.photo || 'https://randomuser.me/api/portraits/women/44.jpg'}
+                    alt="User profile"
+                    className="w-10 h-10 rounded-full object-cover"
+                />
+                <div className="flex flex-col text-sm">
+                    <span className="font-semibold">{authUser ? `${authUser.first_name || ''} ${authUser.last_name || ''}`.trim() : 'Joan Legal'}</span>
+                    <span className="text-gray-400 text-xs">{authUser?.email || 'Joan@dslegal.com'}</span>
                 </div>
+                <button
+                    onClick={handleLogout}
+                    className="ml-auto p-4 rounded-full hover:bg-gray-800 transition-colors cursor-pointer"
+                    aria-label="Log out"
+                >
+                    <LogOut size={18} />
+                </button>
+            </div>
             </aside>
             {/* Mobile Bottom Navigation */}
             <nav
