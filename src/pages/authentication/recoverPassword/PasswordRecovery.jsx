@@ -35,7 +35,7 @@ const PasswordRecovery = () => {
     <div className='min-h-screen flex items-center justify-center bg-gray-50 px-4 py-4 sm:py-8'>
       <div className='w-full max-w-sm sm:max-w-md bg-white p-4 sm:p-6 lg:p-8 rounded-lg shadow-sm border'>
         {/* Logo */}
-        <div className='flex justify-center mb-6 sm:mb-8'>
+        <div className='flex justify-center mb-6 sm:mb-8 auth-logo'>
           <LogoColor />
         </div>
         

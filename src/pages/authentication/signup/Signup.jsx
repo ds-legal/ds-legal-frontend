@@ -205,7 +205,7 @@ function Signup() {
                     className="w-full h-full object-cover"
                     alt="Signup"
                 />
-                <div className="absolute inset-0 bg-black/30"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent"></div>
                 
                 {/* Content overlay */}
                 <div className="absolute inset-0 flex flex-col justify-between p-8 lg:p-12">
@@ -217,17 +217,17 @@ function Signup() {
                     {/* Main content */}
                     <div className="flex-1 flex flex-col justify-center">
                         <h1 className="text-white text-2xl sm:text-3xl lg:text-4xl font-semibold leading-tight mb-4 lg:mb-6">
-                            Streamline your legal practice with ds Legal
+                            Streamline your legal practice with DS Legal
                         </h1>
-                        <p className="text-gray-200 text-sm sm:text-base lg:text-lg opacity-90 leading-relaxed">
-                            Introducing our light-weight admin companion built for legal professionals with features that enhance productivity without the complexities of sensitive data storage.
+                        <p className="text-gray-200 text-sm sm:text-base lg:text-lg opacity-95 leading-relaxed">
+                            A lightweight admin companion for legal teams — manage appointments, tasks and invoices securely and efficiently.
                         </p>
                     </div>
                     
-                    {/* Testimonial */}
-                    <div className="bg-black/40 backdrop-blur-sm rounded-lg p-4 lg:p-6 mb-6 lg:mb-8">
+                    {/* Testimonial / highlight */}
+                    <div className="bg-black/40 backdrop-blur-sm p-4 lg:p-6 mb-6 lg:mb-8">
                         <p className="text-gray-200 text-sm lg:text-base mb-3 lg:mb-4">
-                            Lorem ipsum dolor sit amet consectetur. Et molestie arcu elit ut. Porttitor ut vulputate amet neque nibh.
+                            Used by attorneys to reduce admin time and keep client data organized and secure.
                         </p>
                         <div className="flex items-center gap-3">
                             <img src={user} alt="user" className="h-10 w-10 lg:h-12 lg:w-12 rounded-full" />
@@ -253,7 +253,7 @@ function Signup() {
                     {currentStep === 1 ? (
                         <>
                             {/* Logo */}
-                            <div className="mb-6 sm:mb-8">
+                            <div className="mb-6 sm:mb-8 auth-logo">
                                 <LogoColor />
                             </div>
                             

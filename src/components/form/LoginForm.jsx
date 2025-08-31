@@ -59,7 +59,7 @@ const LoginForm = () => {
   return (
     <div className="w-full max-w-sm sm:max-w-md px-2 sm:px-4 lg:px-0">
       {/* Logo */}
-      <div className="mb-6 sm:mb-8">
+      <div className="mb-6 sm:mb-8 auth-logo">
         <LogoColor />
       </div>
       

@@ -3,7 +3,7 @@ import { changePassword } from '../../../api/auth_api';
 import toast from 'react-hot-toast';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
-import logoColor from '../../../assets/logo-color.png';
+import LogoColor from '../../../components/common/LogoColor';
 
 const CreatePassword = () => {
   const [newPassword, setNewPassword] = useState("");
@@ -68,12 +68,8 @@ const CreatePassword = () => {
     <div className='min-h-screen flex items-center justify-center bg-gray-50 px-4 py-4 sm:py-8'>
       <div className='w-full max-w-sm sm:max-w-md bg-white p-4 sm:p-6 lg:p-8 rounded-lg shadow-sm border'>
         {/* Logo */}
-        <div className='flex justify-center mb-6 sm:mb-8'>
-          <img 
-            src="/logo-color.png" 
-            alt="DS Legal" 
-            className="h-12 w-auto" 
-          />
+        <div className='flex justify-center mb-6 sm:mb-8 auth-logo'>
+          <LogoColor />
         </div>
 
         {/* Heading */}
@@ -94,7 +90,7 @@ const CreatePassword = () => {
                 placeholder='**********'
               />
               <span
-                className='absolute right-3 top-[42px] cursor-pointer text-gray-500'
+                className='absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-500'
                 onClick={() => setShowNewPassword((prev) => !prev)}
               >
                 {showNewPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
@@ -134,7 +130,7 @@ const CreatePassword = () => {
                 placeholder='Confirm your new password'
               />
               <span
-                className='absolute right-3 top-[42px] cursor-pointer text-gray-500'
+                className='absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-500'
                 onClick={() => setShowConfirmPassword((prev) => !prev)}
               >
                 {showConfirmPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}

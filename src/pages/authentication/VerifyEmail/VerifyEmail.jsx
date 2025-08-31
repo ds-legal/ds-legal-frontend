@@ -30,7 +30,9 @@ const VerifyMail = () => {
       <div className='w-full max-w-sm sm:max-w-md bg-white p-4 sm:p-6 lg:p-8 rounded-lg shadow-sm border'>
         {/* Logo */}
         <div className='flex justify-center mb-6 sm:mb-8'>
-          <LogoColor />
+              <div className="auth-logo">
+                <LogoColor />
+              </div>
         </div>
 
         {/* Heading */}

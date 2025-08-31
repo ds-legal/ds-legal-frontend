@@ -30,6 +30,17 @@ p {
     font-family: "Nunito", sans-serif;
 }
 
+/* Ensure logo aligns nicely with headings on light backgrounds */
+.auth-logo {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Make testimonial / highlight card have subtle corners to avoid visible curved edges */
+.auth-left-card {
+  border-radius: 6px; /* subtle rounding */
+}
+
 label {
     font-family: "DM Sans", sans-serif;
     font-weight: 500;

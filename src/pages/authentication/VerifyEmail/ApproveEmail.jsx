@@ -52,7 +52,7 @@ const ApproveMail = () => {
       {/* Success Modal */}
       {!loading && isVerified && (
         <div className="bg-white p-4 sm:p-6 lg:p-8 rounded-lg shadow-sm border text-center max-w-sm sm:max-w-md w-full">
-          <div className="flex justify-center mb-4 sm:mb-6">
+          <div className="flex justify-center mb-4 sm:mb-6 auth-logo">
             <LogoColor />
           </div>
           <div className="w-12 h-12 sm:w-16 sm:h-16 bg-green-500 rounded-lg flex items-center justify-center mx-auto mb-3 sm:mb-4">
@@ -73,7 +73,7 @@ const ApproveMail = () => {
       {/* Failure Modal */}
       {!loading && error && (
         <div className="bg-white p-4 sm:p-6 lg:p-8 rounded-lg shadow-sm border text-center max-w-sm sm:max-w-md w-full">
-          <div className="flex justify-center mb-4 sm:mb-6">
+          <div className="flex justify-center mb-4 sm:mb-6 auth-logo">
             <LogoColor />
           </div>
           <div className="w-12 h-12 sm:w-16 sm:h-16 bg-red-500 rounded-lg flex items-center justify-center mx-auto mb-3 sm:mb-4">
