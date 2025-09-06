@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const BaseUrl = import.meta.env.VITE_BaseUrl;
 
@@ -10,6 +10,10 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
   const [refreshToken, setRefreshToken] = useState(null);
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  // Session key for tracking browser sessions
+  const SESSION_KEY = 'ds_legal_session_active';
 
 
 

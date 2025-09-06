@@ -15,6 +15,7 @@ import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { UseAuth } from '../../store/auth.context';
 import { UserLogOut } from "../../api/auth_api";
+import { useDashboard } from '../../store/dashboard.context';
 
 export const NAV_ITEMS = [
     { name: "Dashboard", Icon: Home, mobile: true, link: "/dashboard" },
@@ -47,6 +48,10 @@ export default function Sidebar() {
     const [active, setActive] = useState("");
     const navigate = useNavigate()
     const { user: authUser } = UseAuth();
+    const { user: dashboardUser } = useDashboard();
+    
+    // Use dashboard user data if available, fallback to auth user
+    const currentUser = dashboardUser || authUser;
 
     // Set initial active state based on current route
     useEffect(() => {
@@ -117,13 +122,15 @@ export default function Sidebar() {
                 role="button"
             >
                 <img
-                    src={authUser?.photo || 'https://randomuser.me/api/portraits/women/44.jpg'}
+                    src={currentUser?.photo || 'https://randomuser.me/api/portraits/women/44.jpg'}
                     alt="User profile"
                     className="w-10 h-10 rounded-full object-cover"
                 />
                 <div className="flex flex-col text-sm">
-                    <span className="font-semibold">{authUser ? `${authUser.first_name || ''} ${authUser.last_name || ''}`.trim() : 'Joan Legal'}</span>
-                    <span className="text-gray-400 text-xs">{authUser?.email || 'Joan@dslegal.com'}</span>
+                    <span className="font-semibold">
+                        {currentUser ? `${currentUser.first_name || ''} ${currentUser.last_name || ''}`.trim() || 'User' : 'User'}
+                    </span>
+                    <span className="text-gray-400 text-xs">{currentUser?.email || 'user@example.com'}</span>
                 </div>
                 <button
                     onClick={handleLogout}
