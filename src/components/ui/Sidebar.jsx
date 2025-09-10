@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
     Home,
     ClipboardList,
@@ -12,7 +12,6 @@ import {
 import clsx from "clsx";
 import logo from "../../assets/newlogo.png";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
 import { UseAuth } from '../../store/auth.context';
 import { UserLogOut } from "../../api/auth_api";
 import { useDashboard } from '../../store/dashboard.context';
@@ -47,11 +46,31 @@ export default function Sidebar() {
     const location = useLocation();
     const [active, setActive] = useState("");
     const navigate = useNavigate()
-    const { user: authUser } = UseAuth();
+    const { user: authUser, isInitialized } = UseAuth();
     const { user: dashboardUser } = useDashboard();
+    const [storedUser, setStoredUser] = useState(null);
     
-    // Use dashboard user data if available, fallback to auth user
-    const currentUser = dashboardUser || authUser;
+    // Listen for localStorage changes for avatar updates
+    useEffect(() => {
+        const updateStoredUser = () => {
+            const user = JSON.parse(localStorage.getItem('user') || 'null');
+            setStoredUser(user);
+        };
+        
+        updateStoredUser(); // Initial load
+        
+        // Listen for storage events and custom user update events
+        window.addEventListener('storage', updateStoredUser);
+        window.addEventListener('userUpdated', updateStoredUser);
+        
+        return () => {
+            window.removeEventListener('storage', updateStoredUser);
+            window.removeEventListener('userUpdated', updateStoredUser);
+        };
+    }, []);
+    
+    // Use dashboard user data if available, fallback to auth user, then stored user
+    const currentUser = { ...dashboardUser, ...authUser, ...storedUser } || dashboardUser || authUser || storedUser;
 
     // Set initial active state based on current route
     useEffect(() => {
@@ -121,11 +140,20 @@ export default function Sidebar() {
                 onClick={() => navigate('/settings')}
                 role="button"
             >
-                <img
-                    src={currentUser?.photo || 'https://randomuser.me/api/portraits/women/44.jpg'}
-                    alt="User profile"
-                    className="w-10 h-10 rounded-full object-cover"
-                />
+                <div className="w-10 h-10 rounded-full overflow-hidden border border-gray-600 bg-gray-700 flex items-center justify-center">
+                    {currentUser?.avatar_url || currentUser?.photo ? (
+                        <img
+                            src={currentUser?.avatar_url || currentUser?.photo}
+                            alt="User profile"
+                            className="w-full h-full object-cover object-center rounded-full"
+                            style={{ aspectRatio: '1 / 1' }}
+                        />
+                    ) : (
+                        <div className="w-full h-full bg-[#1983D5] rounded-full flex items-center justify-center text-white text-sm font-semibold">
+                            {currentUser?.first_name ? currentUser.first_name.charAt(0).toUpperCase() : 'U'}
+                        </div>
+                    )}
+                </div>
                 <div className="flex flex-col text-sm">
                     <span className="font-semibold">
                         {currentUser ? `${currentUser.first_name || ''} ${currentUser.last_name || ''}`.trim() || 'User' : 'User'}

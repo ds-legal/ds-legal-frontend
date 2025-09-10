@@ -4,9 +4,12 @@ import { useLocation } from "react-router-dom";
 import logo from "../../assets/logo-color.png";
 import { useNavigate } from 'react-router-dom';
 import { UseAuth } from '../../store/auth.context';
+import { useDashboard } from '../../store/dashboard.context';
+import { useState, useEffect } from 'react';
 
 const Header = () => {
     const location = useLocation();
+    const [storedUser, setStoredUser] = useState(null);
 
     // Find the active nav item that matches the current path
     const activePageItem = NAV_ITEMS.find(
@@ -16,7 +19,40 @@ const Header = () => {
     );
 
     const navigate = useNavigate();
-    const { user: authUser } = UseAuth();
+    const { user: authUser, isInitialized } = UseAuth();
+    const { user: dashboardUser } = useDashboard();
+    
+    // Listen for localStorage changes
+    useEffect(() => {
+        const updateStoredUser = () => {
+            const user = JSON.parse(localStorage.getItem('user') || 'null');
+            setStoredUser(user);
+        };
+        
+        updateStoredUser(); // Initial load
+        
+        // Listen for storage events (when avatar is updated)
+        window.addEventListener('storage', updateStoredUser);
+        
+        // Custom event for same-tab localStorage updates
+        window.addEventListener('userUpdated', updateStoredUser);
+        
+        return () => {
+            window.removeEventListener('storage', updateStoredUser);
+            window.removeEventListener('userUpdated', updateStoredUser);
+        };
+    }, []);
+    
+    // Use dashboard user data if available, fallback to auth user, then stored user
+    const currentUser = dashboardUser || authUser || storedUser;
+    
+    // Try to get avatar from multiple sources (prioritize auth user since it's most up-to-date)
+    const avatarUrl = currentUser?.avatar_url || storedUser?.avatar_url || currentUser?.photo;
+    
+    // Don't render avatar until auth is initialized to avoid flashing
+    if (!isInitialized) {
+        return null;
+    }
 
     return (
         <header className="sticky top-0 w-full flex items-center justify-between px-4 py-4 bg-white shadow-sm z-50">
@@ -74,11 +110,21 @@ const Header = () => {
 
                 {/* User dropdown */}
                 <div className="flex items-center space-x-2 cursor-pointer" onClick={() => navigate('/settings')}>
-                    <div className="h-8 w-8 rounded-full bg-[#ffece5] flex items-center justify-center overflow-hidden">
-                        {authUser?.photo ? (
-                            <img src={authUser.photo} alt="user" className="w-full h-full object-cover" />
+                    <div className="h-8 w-8 rounded-full bg-[#ffece5] flex items-center justify-center overflow-hidden border border-gray-200">
+                        {avatarUrl ? (
+                            <img 
+                                src={avatarUrl} 
+                                alt="user" 
+                                className="w-full h-full object-cover object-center rounded-full"
+                                onError={(e) => {
+                                    console.log('Avatar failed to load:', avatarUrl);
+                                    e.target.style.display = 'none';
+                                }}
+                            />
                         ) : (
-                            <User className="h-4 w-4 text-black" />
+                            <div className="w-full h-full bg-[#1983D5] rounded-full flex items-center justify-center text-white text-sm font-semibold">
+                                {currentUser?.first_name ? currentUser.first_name.charAt(0).toUpperCase() : <User className="h-4 w-4 text-white" />}
+                            </div>
                         )}
                     </div>
                     <ChevronDown className="hidden sm:block h-4 w-4 text-gray-600" />
