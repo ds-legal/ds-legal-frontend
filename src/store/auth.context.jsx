@@ -91,6 +91,33 @@ export const AuthProvider = ({ children }) => {
         setToken(data.access_token);
         setRefreshToken(data.refresh_token);
         setUser(data.data);
+        
+        // Fetch complete user profile to get avatar and other details
+        try {
+          const profileResponse = await fetch(`${BaseUrl}/api/v1/users/profile`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${data.access_token}`,
+            },
+          });
+          
+          if (profileResponse.ok) {
+            const profileData = await profileResponse.json();
+            if (profileData.data) {
+              // Update user with complete profile data including avatar
+              const completeUserData = { ...data.data, ...profileData.data };
+              localStorage.setItem("user", JSON.stringify(completeUserData));
+              setUser(completeUserData);
+            }
+          }
+        } catch (error) {
+          console.log('Failed to fetch complete profile after login:', error);
+          // Continue with login even if profile fetch fails
+        }
+        
+        // Dispatch custom event to notify all components about user update
+        window.dispatchEvent(new Event('userUpdated'));
      }
      return data
   }
@@ -100,6 +127,9 @@ export const AuthProvider = ({ children }) => {
     const updatedUser = { ...user, ...userData };
     setUser(updatedUser);
     localStorage.setItem('user', JSON.stringify(updatedUser));
+    
+    // Dispatch custom event to notify all components about user update
+    window.dispatchEvent(new Event('userUpdated'));
   };
 
   // resetPassword

@@ -1,24 +1,30 @@
  const Base_url = import.meta.env.VITE_BaseUrl
 export const UserLogOut = async () => {
-     const token = localStorage.getItem("refresh_token");
+  const accessToken = localStorage.getItem("token");
   try {
     const response = await fetch(`${Base_url}/api/v1/auth/logout`, {
-     method:"POST",
-     headers:{
-     "Content-Type" : "application/json",
-      Authorization: `Bearer ${token}`
-     },   
-    }) 
-    const data = response.json()
-    return data
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    let data;
+    try {
+      data = await response.json();
+    } catch (_) {
+      data = { ok: response.ok, status: response.status };
+    }
+    return { ...data, ok: response.ok, status: response.status };
   } catch (error) {
-     console.log("failed to Logout",error)
-  }  
+    console.log("failed to Logout", error);
+    return { ok: false, error: error?.message };
+  }
 }
 
 
   export const verifyEmail = async (email) => {
-     const token = localStorage.getItem("refresh_token");
+     const token = localStorage.getItem("token");
   try {
     const response = await fetch(`${Base_url}/api/v1/auth/request-verification-email`, {
      method:"POST",
