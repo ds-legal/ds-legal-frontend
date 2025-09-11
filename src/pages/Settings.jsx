@@ -1,28 +1,80 @@
-import { useEffect, useState } from 'react';
-import { getUserProfile, updateUserProfile } from './authentication/../../api/auth_api';
+import { useEffect, useState, useRef } from 'react';
+import { getUserProfile, updateUserProfile, updateUserAvatar } from './authentication/../../api/auth_api';
 import toast from 'react-hot-toast';
+import { Camera, Upload } from 'lucide-react';
+import { useDashboard } from '../store/dashboard.context';
+import { UseAuth } from '../store/auth.context';
 
 function Settings() {
-  const storedUser = JSON.parse(localStorage.getItem('user') || 'null');
-  const [profile, setProfile] = useState({
-    first_name: storedUser?.first_name || '',
-    last_name: storedUser?.last_name || '',
-    email: storedUser?.email || '',
-    firm_name: storedUser?.firm_name || '',
-    address: storedUser?.address || '',
-    state: storedUser?.state || '',
-    postal_code: storedUser?.postal_code || '',
-    phone_number: storedUser?.phone_number || '',
+  const [storedUser, setStoredUser] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('user') || 'null');
+    } catch {
+      return null;
+    }
+  });
+  
+  const [profile, setProfile] = useState(() => {
+    // Initialize with stored user data if available
+    if (storedUser && Object.keys(storedUser).length > 0) {
+      return {
+        first_name: storedUser.first_name || '',
+        last_name: storedUser.last_name || '',
+        email: storedUser.email || '',
+        firm_name: storedUser.firm_name || '',
+        address: storedUser.address || '',
+        state: storedUser.state || '',
+        postal_code: storedUser.postal_code || '',
+        phone_number: storedUser.phone_number || '',
+      };
+    }
+    return {
+      first_name: '',
+      last_name: '',
+      email: '',
+      firm_name: '',
+      address: '',
+      state: '',
+      postal_code: '',
+      phone_number: '',
+    };
   });
   const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [avatarLoading, setAvatarLoading] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState(storedUser?.avatar_url || '');
+  const fileInputRef = useRef(null);
+  const { fetchDashboardData } = useDashboard(); 
+  const { updateUser } = UseAuth();
 
   useEffect(() => {
     const fetchProfile = async () => {
-      setLoading(true);
+               // Only show loading if we don't have any stored user data
+      if (!storedUser || Object.keys(storedUser).length === 0) {
+        setLoading(true);
+      }
+      
       try {
+        // First, try to use data from auth context if available
+        if (storedUser && Object.keys(storedUser).length > 0) {
+          const profileData = {
+            first_name: storedUser.first_name || '',
+            last_name: storedUser.last_name || '',
+            email: storedUser.email || '',
+            firm_name: storedUser.firm_name || '',
+            address: storedUser.address || '',
+            state: storedUser.state || '',
+            postal_code: storedUser.postal_code || '',
+            phone_number: storedUser.phone_number || '',
+          };
+          setProfile(profileData);
+          setAvatarUrl(storedUser.avatar_url || '');
+        }
+
+        // Then fetch fresh data from API to ensure we have the latest
         const res = await getUserProfile();
         if (res && res.data) {
-          setProfile({
+          const profileData = {
             first_name: res.data.first_name || '',
             last_name: res.data.last_name || '',
             email: res.data.email || '',
@@ -31,19 +83,102 @@ function Settings() {
             state: res.data.state || '',
             postal_code: res.data.postal_code || '',
             phone_number: res.data.phone_number || '',
-          });
+          };
+          setProfile(profileData);
+          setAvatarUrl(res.data.avatar_url || '');
+          
+          // Update auth context with complete profile data including avatar
+          updateUser({ ...profileData, avatar_url: res.data.avatar_url || '' });
         }
       } catch (error) {
-        toast.error('Failed to load profile');
+        console.error('Failed to load profile:', error);
+        // Don't show error toast if we have stored user data
+        if (!storedUser || Object.keys(storedUser).length === 0) {
+          toast.error('Failed to load profile');
+        }
       } finally {
         setLoading(false);
       }
     };
     fetchProfile();
-  }, []);
+  }, []); // Remove updateUser dependency to prevent infinite loop
+
+  // Listen for user updates from other components (only for avatar updates)
+  useEffect(() => {
+    const updateStoredUser = () => {
+      try {
+        const user = JSON.parse(localStorage.getItem('user') || 'null');
+        // Only update avatar URL, don't reset the entire storedUser state
+        if (user && user.avatar_url && user.avatar_url !== avatarUrl) {
+          setAvatarUrl(user.avatar_url);
+        }
+      } catch {
+        // Ignore errors
+      }
+    };
+    
+    // Listen for storage events (when avatar is updated)
+    window.addEventListener('storage', updateStoredUser);
+    
+    // Custom event for same-tab localStorage updates
+    window.addEventListener('userUpdated', updateStoredUser);
+    
+    return () => {
+      window.removeEventListener('storage', updateStoredUser);
+      window.removeEventListener('userUpdated', updateStoredUser);
+    };
+  }, [avatarUrl]); // Only depend on avatarUrl to prevent unnecessary re-renders
+
+  const handleAvatarUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error('Please select a valid image file (JPEG, PNG, or GIF)');
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+    if (file.size > maxSize) {
+      toast.error('File size must be less than 5MB');
+      return;
+    }
+
+    setAvatarLoading(true);
+    try {
+      const res = await updateUserAvatar(file);
+      if (res && res.success) {
+        setAvatarUrl(res.data.avatar_url);
+        
+        // Update auth context and localStorage with new avatar URL
+        updateUser({ avatar_url: res.data.avatar_url });
+        
+        // Dispatch custom event to notify other components
+        window.dispatchEvent(new Event('userUpdated'));
+        
+        // Refresh dashboard data to update user info across the app
+        fetchDashboardData();
+        toast.success(res.message || 'Profile picture updated successfully');
+      } else {
+        toast.error(res.message || 'Failed to update profile picture');
+      }
+    } catch (error) {
+      toast.error('Failed to upload profile picture');
+      console.error('Avatar upload error:', error);
+    } finally {
+      setAvatarLoading(false);
+    }
+  };
+
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click();
+  };
 
   const handleSave = async () => {
-    setLoading(true);
+    setSaving(true);
     try {
       const payload = {
         first_name: profile.first_name,
@@ -55,16 +190,24 @@ function Settings() {
         postal_code: profile.postal_code,
         phone_number: profile.phone_number,
       };
+      
+      console.log('Updating profile with payload:', payload);
       const res = await updateUserProfile(payload);
+      console.log('Update profile response:', res);
+      
       if (res && res.status_code === 200) {
-        toast.success(res.message || 'Profile updated');
+        // Update auth context with new profile data
+        updateUser(payload);
+        toast.success(res.message || 'Profile updated successfully');
       } else {
-        toast.error(res.detail || 'Failed to update profile');
+        console.error('Profile update failed:', res);
+        toast.error(res.message || res.detail || 'Failed to update profile');
       }
     } catch (error) {
-      toast.error('Failed to update profile');
+      console.error('Profile update error:', error);
+      toast.error('Failed to update profile: ' + error.message);
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
   };
 
@@ -107,6 +250,68 @@ function Settings() {
 
           {/* Right Column - Form */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Profile Picture Upload - Full Width */}
+            <div className="md:col-span-2 mb-4">
+              <div className="flex items-center gap-6">
+                <div className="relative">
+                  <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-gray-200 bg-[#ffece5] flex items-center justify-center">
+                    {avatarUrl ? (
+                      <img
+                        src={avatarUrl}
+                        alt="Profile"
+                        className="w-full h-full object-cover object-center rounded-full"
+                        onError={(e) => {
+                          console.log('Avatar failed to load:', avatarUrl);
+                          e.target.style.display = 'none';
+                        }}
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-[#1983D5] rounded-full flex items-center justify-center text-white text-xl font-semibold">
+                        {profile.first_name ? profile.first_name.charAt(0).toUpperCase() : 'U'}
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Camera Icon Overlay */}
+                  <button
+                    onClick={handleAvatarClick}
+                    disabled={avatarLoading}
+                    className="absolute bottom-0 right-0 w-8 h-8 bg-[#1983D5] rounded-full flex items-center justify-center text-white hover:bg-[#1570B8] transition-colors disabled:opacity-50"
+                  >
+                    {avatarLoading ? (
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    ) : (
+                      <Camera size={16} />
+                    )}
+                  </button>
+                </div>
+
+                <div className="flex-1">
+                  <button
+                    onClick={handleAvatarClick}
+                    disabled={avatarLoading}
+                    className="flex items-center gap-2 px-4 py-2 border border-[#D0D5DD] rounded-md hover:bg-gray-50 transition-colors disabled:opacity-50"
+                  >
+                    <Upload size={16} />
+                    <span className="text-[14px] font-medium">
+                      {avatarLoading ? 'Uploading...' : 'Click to upload'}
+                    </span>
+                  </button>
+                  <p className="text-[12px] text-[#667185] mt-2">
+                    SVG, PNG, JPG or GIF (max. 5MB)
+                  </p>
+                </div>
+
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleAvatarUpload}
+                  className="hidden"
+                />
+              </div>
+            </div>
+
             <div>
               <label className="text-[14px] font-normal text-[#101928]">First Name</label>
               <input
@@ -186,10 +391,10 @@ function Settings() {
             <div className="md:col-span-2 mt-4 flex justify-end">
               <button
                 onClick={handleSave}
-                disabled={loading}
-                className="bg-[#101928] text-white px-6 py-2 rounded-md hover:bg-opacity-90 text-sm disabled:opacity-60"
+                disabled={saving}
+                className="bg-[#101928] text-white px-6 py-2 rounded-md hover:bg-opacity-90 text-sm disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:bg-opacity-100"
               >
-                {loading ? 'Saving...' : 'Save'}
+                {saving ? 'Saving...' : 'Save'}
               </button>
             </div>
           </div>

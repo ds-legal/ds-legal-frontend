@@ -15,6 +15,24 @@ export const AuthProvider = ({ children }) => {
   // Session key for tracking browser sessions
   const SESSION_KEY = 'ds_legal_session_active';
 
+  // Initialize user data from localStorage on app startup
+  useEffect(() => {
+    const initializeAuth = () => {
+      const storedToken = localStorage.getItem('token');
+      const storedRefreshToken = localStorage.getItem('refresh_token');
+      const storedUser = localStorage.getItem('user');
+
+      if (storedToken && storedUser) {
+        setToken(storedToken);
+        setRefreshToken(storedRefreshToken);
+        setUser(JSON.parse(storedUser));
+      }
+      setIsInitialized(true);
+    };
+
+    initializeAuth();
+  }, []);
+
 
 
   
@@ -77,6 +95,13 @@ export const AuthProvider = ({ children }) => {
      return data
   }
 
+  // Update user data (useful for avatar updates)
+  const updateUser = (userData) => {
+    const updatedUser = { ...user, ...userData };
+    setUser(updatedUser);
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+  };
+
   // resetPassword
    const ResetPassword = async (payload) => {
     const response = await fetch (`${BaseUrl}//api/v1/auth/login`,{
@@ -85,7 +110,7 @@ export const AuthProvider = ({ children }) => {
    }
 
   return (
-    <AuthContext.Provider value={{ user, RegisterUser , token, refreshToken,LoginUser }}>
+    <AuthContext.Provider value={{ user, RegisterUser , token, refreshToken, LoginUser, updateUser, isInitialized }}>
       {children}
     </AuthContext.Provider>
   );

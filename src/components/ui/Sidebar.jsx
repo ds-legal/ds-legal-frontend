@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
     Home,
     ClipboardList,
@@ -8,11 +8,11 @@ import {
     StickyNote,
     Settings,
     LogOut,
+    ChevronDown,
 } from "lucide-react";
 import clsx from "clsx";
 import logo from "../../assets/newlogo.png";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
 import { UseAuth } from '../../store/auth.context';
 import { UserLogOut } from "../../api/auth_api";
 import { useDashboard } from '../../store/dashboard.context';
@@ -47,11 +47,31 @@ export default function Sidebar() {
     const location = useLocation();
     const [active, setActive] = useState("");
     const navigate = useNavigate()
-    const { user: authUser } = UseAuth();
+    const { user: authUser, isInitialized } = UseAuth();
     const { user: dashboardUser } = useDashboard();
+    const [storedUser, setStoredUser] = useState(null);
     
-    // Use dashboard user data if available, fallback to auth user
-    const currentUser = dashboardUser || authUser;
+    // Listen for localStorage changes for avatar updates
+    useEffect(() => {
+        const updateStoredUser = () => {
+            const user = JSON.parse(localStorage.getItem('user') || 'null');
+            setStoredUser(user);
+        };
+        
+        updateStoredUser(); // Initial load
+        
+        // Listen for storage events and custom user update events
+        window.addEventListener('storage', updateStoredUser);
+        window.addEventListener('userUpdated', updateStoredUser);
+        
+        return () => {
+            window.removeEventListener('storage', updateStoredUser);
+            window.removeEventListener('userUpdated', updateStoredUser);
+        };
+    }, []);
+    
+    // Use dashboard user data if available, fallback to auth user, then stored user
+    const currentUser = { ...dashboardUser, ...authUser, ...storedUser } || dashboardUser || authUser || storedUser;
 
     // Set initial active state based on current route
     useEffect(() => {
@@ -116,29 +136,49 @@ export default function Sidebar() {
             </div>
 
             {/* User Info Section */}
-            <div
-                className="flex items-center gap-3 mt-10 border-t border-gray-700 pt-4 cursor-pointer"
-                onClick={() => navigate('/settings')}
-                role="button"
-            >
-                <img
-                    src={currentUser?.photo || 'https://randomuser.me/api/portraits/women/44.jpg'}
-                    alt="User profile"
-                    className="w-10 h-10 rounded-full object-cover"
-                />
-                <div className="flex flex-col text-sm">
-                    <span className="font-semibold">
-                        {currentUser ? `${currentUser.first_name || ''} ${currentUser.last_name || ''}`.trim() || 'User' : 'User'}
-                    </span>
-                    <span className="text-gray-400 text-xs">{currentUser?.email || 'user@example.com'}</span>
-                </div>
-                <button
-                    onClick={handleLogout}
-                    className="ml-auto p-4 rounded-full hover:bg-gray-800 transition-colors cursor-pointer"
-                    aria-label="Log out"
+            <div className="mt-10 border-t border-gray-700 pt-4">
+                <div
+                    className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition-colors cursor-pointer"
+                    onClick={() => navigate('/settings')}
+                    role="button"
                 >
-                    <LogOut size={18} />
-                </button>
+                    <div className="w-10 h-10 rounded-full overflow-hidden border border-gray-300 bg-gray-100 flex items-center justify-center">
+                        {currentUser?.avatar_url || currentUser?.photo ? (
+                            <img
+                                src={currentUser?.avatar_url || currentUser?.photo}
+                                alt="User profile"
+                                className="w-full h-full object-cover object-center rounded-full"
+                                onError={(e) => {
+                                    console.log('Avatar failed to load:', currentUser?.avatar_url || currentUser?.photo);
+                                    e.target.style.display = 'none';
+                                }}
+                            />
+                        ) : (
+                            <div className="w-full h-full bg-[#1983D5] rounded-full flex items-center justify-center text-white text-sm font-semibold">
+                                {currentUser?.first_name ? currentUser.first_name.charAt(0).toUpperCase() : 'U'}
+                            </div>
+                        )}
+                    </div>
+                    <div className="flex flex-col flex-1 min-w-0">
+                        <span className="font-semibold text-white text-sm truncate">
+                            {currentUser ? `${currentUser.first_name || ''} ${currentUser.last_name || ''}`.trim() || 'User' : 'User'}
+                        </span>
+                        <span className="text-gray-400 text-xs truncate">{currentUser?.email || 'user@example.com'}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleLogout();
+                            }}
+                            className="p-2 rounded-full hover:bg-gray-700 transition-colors cursor-pointer"
+                            aria-label="Log out"
+                        >
+                            <LogOut size={16} />
+                        </button>
+                        <ChevronDown size={16} className="text-gray-400" />
+                    </div>
+                </div>
             </div>
             </aside>
             {/* Mobile Bottom Navigation */}

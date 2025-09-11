@@ -114,7 +114,19 @@ export const UserLogOut = async () => {
 
       export const updateUserProfile = async (payload) => {
          const token = localStorage.getItem('token');
+         
+         if (!token) {
+            throw new Error('No authentication token found');
+         }
+         
+         if (!Base_url) {
+            throw new Error('Base URL not configured');
+         }
+         
          try {
+            console.log('Making profile update request to:', `${Base_url}/api/v1/users/profile`);
+            console.log('Request payload:', payload);
+            
             const res = await fetch(`${Base_url}/api/v1/users/profile`, {
                method: 'PATCH',
                headers: {
@@ -123,10 +135,43 @@ export const UserLogOut = async () => {
                },
                body: JSON.stringify(payload),
             });
+            
+            console.log('Response status:', res.status);
+            console.log('Response ok:', res.ok);
+            
+            if (!res.ok) {
+               const errorText = await res.text();
+               console.error('API Error Response:', errorText);
+               throw new Error(`HTTP error! status: ${res.status}, message: ${errorText}`);
+            }
+            
+            const data = await res.json();
+            console.log('Profile update response data:', data);
+            return data;
+         } catch (error) {
+            console.error('Failed to update profile:', error);
+            throw error;
+         }
+      };
+
+      export const updateUserAvatar = async (avatarFile) => {
+         const token = localStorage.getItem('token');
+         try {
+            const formData = new FormData();
+            formData.append('avatar', avatarFile);
+
+            const res = await fetch(`${Base_url}/api/v1/users/profile/avatar`, {
+               method: 'PATCH',
+               headers: {
+                  Authorization: `Bearer ${token}`,
+                  // Don't set Content-Type header - let browser set it with boundary for multipart/form-data
+               },
+               body: formData,
+            });
             const data = await res.json();
             return data;
          } catch (error) {
-            console.log('Failed to update profile', error);
+            console.log('Failed to update avatar', error);
             throw error;
          }
       };

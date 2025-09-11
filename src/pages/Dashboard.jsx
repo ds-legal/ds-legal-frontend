@@ -12,6 +12,7 @@ import { useDashboard } from '../store/dashboard.context';
 import { useEffect } from 'react';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import { useNavigate } from 'react-router-dom';
+import { UseAuth } from '../store/auth.context';
 
 
 function Dashboard() {
@@ -21,6 +22,7 @@ function Dashboard() {
     dashboardData, 
     loading, 
     error, 
+    isInitialized,
     fetchDashboardData, 
     user: userData, 
     statistics, 
@@ -28,16 +30,15 @@ function Dashboard() {
     highPriorityTasks, 
     recentInvoices 
   } = useDashboard();
-
-  useEffect(() => {
-    fetchDashboardData();
-  }, []);
+  
+  const { user: authUser } = UseAuth();
 
   const handleSeeAllTasks = () => {
     navigate('/tasks');
   };
 
-  if (loading) {
+  // Show loading only if we don't have any data and are still loading
+  if (loading && !dashboardData) {
     return (
       <div className="lg:px-8 py-4 px-3 flex justify-center items-center min-h-[400px]">
         <LoadingSpinner />
@@ -200,7 +201,22 @@ function Dashboard() {
               <div className='flex justify-between items-center mt-4'>
                 <div className=' flex flex-col gap-1'>
                   <div className="flex flex-row">
-                    <img src={user} alt="" className="w-8 h-8 object-cover rounded-full" />
+                    <div className="w-8 h-8 rounded-full overflow-hidden border border-gray-200 bg-[#ffece5] flex items-center justify-center">
+                      {authUser?.avatar_url ? (
+                        <img 
+                          src={authUser.avatar_url} 
+                          alt="user" 
+                          className="w-full h-full object-cover object-center rounded-full"
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                          }}
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-[#1983D5] rounded-full flex items-center justify-center text-white text-xs font-semibold">
+                          {authUser?.first_name ? authUser.first_name.charAt(0).toUpperCase() : 'U'}
+                        </div>
+                      )}
+                    </div>
                   </div>
                   {task.due_date && (
                     <p className='text-[12px] text-[#54577A] font-[500]'>Due: {task.due_date}</p>
