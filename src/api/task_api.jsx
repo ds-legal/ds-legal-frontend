@@ -2,7 +2,7 @@
 
  export const createTasks = async ({ title, description, due_date, priority, status, category }) => {
   try {
-    const token = localStorage.getItem("refresh_token");
+    const token = localStorage.getItem("token");
 
     const response = await fetch(`${Base_url}/api/v1/tasks`, {
       method: "POST",
@@ -28,7 +28,7 @@
 
 
     export const GetAllTask =  async() => {
-     const token = localStorage.getItem("refresh_token");
+     const token = localStorage.getItem("token");
     try {
       const response = await  fetch(`${Base_url}/api/v1/tasks`,{
      method:"GET",
@@ -51,7 +51,7 @@
 
 
    export const GetSingleTask =  async(id) => {
-   const token = localStorage.getItem("refresh_token");
+   const token = localStorage.getItem("token");
     try {
     const response = await  fetch(`${Base_url}/api/v1/tasks/${id}`,{
      method:"GET",
@@ -74,10 +74,10 @@
   
    export const updateTask = async (id, { title, description, due_date, priority, status, category }) => {
     try {
-        const token = localStorage.getItem("refresh_token");
+        const token = localStorage.getItem("token");
         
         const response = await fetch(`${Base_url}/api/v1/tasks/${id}`, {
-            method: "PATCH",
+            method: "PUT",
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${token}`,
@@ -108,7 +108,7 @@
   
    export const DeleteTask =  async(id) => {
     try {
-        const token = localStorage.getItem("refresh_token");
+        const token = localStorage.getItem("token");
         
         const response = await  fetch(`${Base_url}/api/v1/tasks/${id}`,{
      method:"DELETE",

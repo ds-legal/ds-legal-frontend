@@ -213,7 +213,7 @@ function Settings() {
 
   return (
     <>
-      <div className="px-4 lg:px-8 py-4 max-w-full">
+      <div className="px-4 lg:px-8 py-4 pb-24 max-w-full">
         {/* Heading */}
         <div className="flex justify-between lg:flex-row flex-col gap-4 mb-4">
           <div>
@@ -388,7 +388,7 @@ function Settings() {
                 className="mt-1 w-full rounded-md border-2 border-[#D0D5DD] text-sm p-2"
               />
             </div>
-            <div className="md:col-span-2 mt-4 flex justify-end">
+            <div className="md:col-span-2 mt-4 flex justify-end sticky bottom-4 bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/70 py-2 px-2 rounded-md">
               <button
                 onClick={handleSave}
                 disabled={saving}

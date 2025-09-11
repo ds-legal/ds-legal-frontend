@@ -47,6 +47,14 @@ export const DashboardProvider = ({ children }) => {
   // Initialize dashboard data on mount
   useEffect(() => {
     const initializeDashboard = async () => {
+      const token = localStorage.getItem('token');
+      
+      // Only initialize if user is authenticated
+      if (!token) {
+        setIsInitialized(true);
+        return;
+      }
+      
       const cacheTimestamp = localStorage.getItem('dashboard_cache_timestamp');
       const now = Date.now();
       const cacheAge = cacheTimestamp ? now - parseInt(cacheTimestamp) : Infinity;
@@ -63,6 +71,40 @@ export const DashboardProvider = ({ children }) => {
     };
     
     initializeDashboard();
+  }, []);
+
+  // Listen for user authentication events
+  useEffect(() => {
+    const handleUserUpdate = () => {
+      const token = localStorage.getItem('token');
+      if (token && !isInitialized) {
+        // User just logged in, fetch dashboard data
+        fetchDashboardData(true);
+      }
+    };
+
+    // Listen for user updates (login, profile updates)
+    window.addEventListener('userUpdated', handleUserUpdate);
+    
+    return () => {
+      window.removeEventListener('userUpdated', handleUserUpdate);
+    };
+  }, [isInitialized]);
+
+  // Listen for logout events to clear cache
+  useEffect(() => {
+    const handleLogout = () => {
+      setDashboardData(null);
+      setError(null);
+      setIsInitialized(false);
+    };
+
+    // Listen for custom logout event
+    window.addEventListener('userLoggedOut', handleLogout);
+    
+    return () => {
+      window.removeEventListener('userLoggedOut', handleLogout);
+    };
   }, []);
 
   // Auto-refresh data every 5 minutes

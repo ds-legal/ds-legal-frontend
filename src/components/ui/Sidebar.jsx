@@ -86,15 +86,21 @@ export default function Sidebar() {
     }, [location.pathname]);
 
     const handleLogout =  async() => {
-     const response =  await  UserLogOut()
-      if(response.status_code === 200){
-        localStorage.removeItem("token")
-        localStorage.removeItem("user")
-        localStorage.removeItem("refresh_token")
-        navigate("/login")
-
-      }
-    //   console.log("response", response)
+      try {
+        // Attempt API logout but do not block UI logout on failure
+        await UserLogOut().catch(() => undefined);
+      } catch (_) {}
+      // Clear all auth and cached data regardless of API response
+      localStorage.removeItem("token");
+      localStorage.removeItem("refresh_token");
+      localStorage.removeItem("user");
+      localStorage.removeItem("dashboard_cache");
+      localStorage.removeItem("dashboard_cache_timestamp");
+      
+      // Dispatch logout event to notify all components
+      window.dispatchEvent(new Event('userLoggedOut'));
+      
+      navigate("/login");
     };
 
     return (

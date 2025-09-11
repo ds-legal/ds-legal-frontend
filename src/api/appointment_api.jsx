@@ -2,7 +2,7 @@ const Base_url = import.meta.env.VITE_BaseUrl
 
 export const createAppointment = async ({ title, description, date, start_time, end_time, meeting_link, via_email, via_app, before_value, before_unit, related_task_id }) => {
   try {
-    const token = localStorage.getItem("refresh_token");
+    const token = localStorage.getItem("token");
 
     // Extract date and time components from the datetime strings
     const startDate = new Date(start_time);
@@ -59,7 +59,7 @@ export const createAppointment = async ({ title, description, date, start_time, 
 };
 
 export const getAllAppointments = async() => {
-  const token = localStorage.getItem("refresh_token");
+  const token = localStorage.getItem("token");
   try {
     const response = await fetch(`${Base_url}/api/v1/appointments`, {
       method: "GET",
@@ -82,7 +82,7 @@ export const getAllAppointments = async() => {
 }
 
 export const getSingleAppointment = async(id) => {
-  const token = localStorage.getItem("refresh_token");
+  const token = localStorage.getItem("token");
   try {
     const response = await fetch(`${Base_url}/api/v1/appointments/${id}`, {
       method: "GET",
@@ -106,7 +106,7 @@ export const getSingleAppointment = async(id) => {
 
 export const updateAppointment = async (id, { title, description, date, start_time, end_time, meeting_link, via_email, via_app, before_value, before_unit, related_task_id }) => {
   try {
-    const token = localStorage.getItem("refresh_token");
+    const token = localStorage.getItem("token");
     
     // Extract date and time components from the datetime strings
     const startDate = new Date(start_time);
@@ -161,7 +161,7 @@ export const updateAppointment = async (id, { title, description, date, start_ti
 
 export const deleteAppointment = async(id) => {
   try {
-    const token = localStorage.getItem("refresh_token");
+    const token = localStorage.getItem("token");
     
     const response = await fetch(`${Base_url}/api/v1/appointments/${id}`, {
       method: "DELETE",
