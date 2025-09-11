@@ -31,19 +31,68 @@ const WeeklyAppointment = () => {
   const { appointments } = useAppointment();
   const appointmentList = Array.isArray(appointments) ? appointments : [];
 
+  // Helper function to format time properly
+  const formatTime = (timeString) => {
+    try {
+      // If it's already a formatted time string, return it
+      if (typeof timeString === 'string' && timeString.includes(':')) {
+        // Check if it's in 24-hour format and convert to 12-hour
+        const timeMatch = timeString.match(/(\d{1,2}):(\d{2})/);
+        if (timeMatch) {
+          const hours = parseInt(timeMatch[1]);
+          const minutes = timeMatch[2];
+          const ampm = hours >= 12 ? 'PM' : 'AM';
+          const displayHours = hours % 12 || 12;
+          return `${displayHours}:${minutes} ${ampm}`;
+        }
+        return timeString;
+      }
+      
+      // If it's a Date object, format it
+      if (timeString instanceof Date && !isNaN(timeString.getTime())) {
+        return timeString.toLocaleTimeString('en-US', { 
+          hour: '2-digit', 
+          minute: '2-digit', 
+          hour12: true 
+        });
+      }
+      
+      // Fallback
+      return 'Invalid Time';
+    } catch (error) {
+      console.error('Time formatting error:', error);
+      return 'Invalid Time';
+    }
+  };
+
+  // Helper function to get day name from date
+  const getDayName = (dateString) => {
+    try {
+      if (dateString) {
+        const date = new Date(dateString);
+        if (!isNaN(date.getTime())) {
+          return date.toLocaleDateString('en-US', { weekday: 'long' });
+        }
+      }
+      return 'Monday'; // Default fallback
+    } catch (error) {
+      console.error('Date parsing error:', error);
+      return 'Monday';
+    }
+  };
+
   // Convert appointments to weekly format
   const weeklyAppointments = appointmentList.map((appointment, index) => {
-    const startTime = new Date(appointment.start_time);
-    const endTime = new Date(appointment.end_time);
-    const dayName = startTime.toLocaleDateString('en-US', { weekday: 'long' });
-    const timeString = startTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+    const startTime = formatTime(appointment.start_time);
+    const endTime = formatTime(appointment.end_time);
+    const dayName = getDayName(appointment.date);
     
     return {
       day: dayName,
-      time: timeString,
+      time: startTime,
       title: appointment.title,
-      startTime: startTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }),
-      endTime: endTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }),
+      startTime: startTime,
+      endTime: endTime,
       address: appointment.description || 'No description',
       colorIndex: index
     };

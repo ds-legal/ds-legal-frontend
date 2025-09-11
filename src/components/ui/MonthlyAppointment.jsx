@@ -24,10 +24,25 @@ const MonthlyAppointment = () => {
   const { appointments } = useAppointment();
   const appointmentList = Array.isArray(appointments) ? appointments : [];
 
+  // Helper function to get day from date
+  const getDayFromDate = (dateString) => {
+    try {
+      if (dateString) {
+        const date = new Date(dateString);
+        if (!isNaN(date.getTime())) {
+          return date.getDate();
+        }
+      }
+      return 1; // Default fallback
+    } catch (error) {
+      console.error('Date parsing error:', error);
+      return 1;
+    }
+  };
+
   // Convert appointments to monthly format
   const monthlyAppointments = appointmentList.map((appointment, index) => {
-    const startDate = new Date(appointment.start_time);
-    const day = startDate.getDate();
+    const day = getDayFromDate(appointment.date);
     
     return {
       day: day,

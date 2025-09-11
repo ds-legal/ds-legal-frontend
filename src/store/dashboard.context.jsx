@@ -12,25 +12,58 @@ export const useDashboard = () => {
 };
 
 export const DashboardProvider = ({ children }) => {
-  const [dashboardData, setDashboardData] = useState(null);
+  const [dashboardData, setDashboardData] = useState(() => {
+    // Initialize with cached data if available
+    const cached = localStorage.getItem('dashboard_cache');
+    return cached ? JSON.parse(cached) : null;
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [isInitialized, setIsInitialized] = useState(false);
 
-  const fetchDashboardData = async () => {
-    setLoading(true);
+  const fetchDashboardData = async (showLoading = true) => {
+    if (showLoading) {
+      setLoading(true);
+    }
     setError(null);
     
     try {
       const data = await getDashboardData();
       console.log('Dashboard data received:', data);
       setDashboardData(data);
+      
+      // Cache the data for faster subsequent loads
+      localStorage.setItem('dashboard_cache', JSON.stringify(data));
+      localStorage.setItem('dashboard_cache_timestamp', Date.now().toString());
     } catch (err) {
       setError(err.message || 'Failed to fetch dashboard data');
       console.error('Dashboard fetch error:', err);
     } finally {
       setLoading(false);
+      setIsInitialized(true);
     }
   };
+
+  // Initialize dashboard data on mount
+  useEffect(() => {
+    const initializeDashboard = async () => {
+      const cacheTimestamp = localStorage.getItem('dashboard_cache_timestamp');
+      const now = Date.now();
+      const cacheAge = cacheTimestamp ? now - parseInt(cacheTimestamp) : Infinity;
+      
+      // If we have fresh cached data (less than 5 minutes old), use it
+      if (dashboardData && cacheAge < 5 * 60 * 1000) {
+        setIsInitialized(true);
+        // Still fetch fresh data in background
+        fetchDashboardData(false);
+      } else {
+        // No cache or stale cache, fetch immediately
+        await fetchDashboardData(true);
+      }
+    };
+    
+    initializeDashboard();
+  }, []);
 
   // Auto-refresh data every 5 minutes
   useEffect(() => {
@@ -47,6 +80,7 @@ export const DashboardProvider = ({ children }) => {
     dashboardData,
     loading,
     error,
+    isInitialized,
     fetchDashboardData,
     user: dashboardData?.user || null,
     statistics: dashboardData?.statistics || null,

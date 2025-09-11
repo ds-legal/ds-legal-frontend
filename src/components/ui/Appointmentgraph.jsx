@@ -25,15 +25,46 @@ const AppointmentGraph = () => {
   const { appointments } = useAppointment();
   const appointmentList = Array.isArray(appointments) ? appointments : [];
 
+  // Helper function to format time properly
+  const formatTime = (timeString) => {
+    try {
+      // If it's already a formatted time string, return it
+      if (typeof timeString === 'string' && timeString.includes(':')) {
+        // Check if it's in 24-hour format and convert to 12-hour
+        const timeMatch = timeString.match(/(\d{1,2}):(\d{2})/);
+        if (timeMatch) {
+          const hours = parseInt(timeMatch[1]);
+          const minutes = timeMatch[2];
+          const ampm = hours >= 12 ? 'PM' : 'AM';
+          const displayHours = hours % 12 || 12;
+          return `${displayHours}:${minutes} ${ampm}`;
+        }
+        return timeString;
+      }
+      
+      // If it's a Date object, format it
+      if (timeString instanceof Date && !isNaN(timeString.getTime())) {
+        return timeString.toLocaleTimeString('en-US', { 
+          hour: '2-digit', 
+          minute: '2-digit', 
+          hour12: true 
+        });
+      }
+      
+      // Fallback
+      return 'Invalid Time';
+    } catch (error) {
+      console.error('Time formatting error:', error);
+      return 'Invalid Time';
+    }
+  };
+
   // Filter today's appointments and format them
   const todayAppointments = appointmentList.map((appointment, index) => {
-    const startTime = new Date(appointment.start_time);
-    const endTime = new Date(appointment.end_time);
-    
     return {
       id: appointment.id,
-      startTime: startTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }),
-      endTime: endTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }),
+      startTime: formatTime(appointment.start_time),
+      endTime: formatTime(appointment.end_time),
       title: appointment.title,
       address: appointment.description || 'No description',
       colorIndex: index

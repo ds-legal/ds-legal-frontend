@@ -10,9 +10,19 @@ const AppointmentCard = ({ appointment, showModal, getAppointment }) => {
     try {
       // If we have both date and time, combine them
       if (date && time) {
-        const combinedDateTime = new Date(`${date}T${time}`);
-        if (!isNaN(combinedDateTime.getTime())) {
-          return combinedDateTime;
+        // Handle different time formats
+        let timeStr = time;
+        if (typeof time === 'string' && !time.includes('T')) {
+          // If time is just "HH:MM" format, add it to the date
+          const combinedDateTime = new Date(`${date}T${timeStr}`);
+          if (!isNaN(combinedDateTime.getTime())) {
+            return combinedDateTime;
+          }
+        } else {
+          const combinedDateTime = new Date(`${date}T${timeStr}`);
+          if (!isNaN(combinedDateTime.getTime())) {
+            return combinedDateTime;
+          }
         }
       }
       
@@ -32,9 +42,10 @@ const AppointmentCard = ({ appointment, showModal, getAppointment }) => {
     }
   };
 
-  // Time logic
-  const startTime = formatTimeFromDateAndTime(appointment.date, appointment.start_time);
-  const endTime = formatTimeFromDateAndTime(appointment.date, appointment.end_time);
+  // Time logic - use current date as fallback for time-only fields
+  const appointmentDate = appointment.date || new Date().toISOString().split('T')[0];
+  const startTime = formatTimeFromDateAndTime(appointmentDate, appointment.start_time);
+  const endTime = formatTimeFromDateAndTime(appointmentDate, appointment.end_time);
   const now = new Date();
   const isUpcoming = startTime > now;
   const isActive = startTime <= now && endTime >= now;

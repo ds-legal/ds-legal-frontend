@@ -6,28 +6,72 @@ import { useDashboard } from '../store/dashboard.context';
 import { UseAuth } from '../store/auth.context';
 
 function Settings() {
-  const storedUser = JSON.parse(localStorage.getItem('user') || 'null');
-  const [profile, setProfile] = useState({
-    first_name: storedUser?.first_name || '',
-    last_name: storedUser?.last_name || '',
-    email: storedUser?.email || '',
-    firm_name: storedUser?.firm_name || '',
-    address: storedUser?.address || '',
-    state: storedUser?.state || '',
-    postal_code: storedUser?.postal_code || '',
-    phone_number: storedUser?.phone_number || '',
+  const [storedUser, setStoredUser] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('user') || 'null');
+    } catch {
+      return null;
+    }
+  });
+  
+  const [profile, setProfile] = useState(() => {
+    // Initialize with stored user data if available
+    if (storedUser && Object.keys(storedUser).length > 0) {
+      return {
+        first_name: storedUser.first_name || '',
+        last_name: storedUser.last_name || '',
+        email: storedUser.email || '',
+        firm_name: storedUser.firm_name || '',
+        address: storedUser.address || '',
+        state: storedUser.state || '',
+        postal_code: storedUser.postal_code || '',
+        phone_number: storedUser.phone_number || '',
+      };
+    }
+    return {
+      first_name: '',
+      last_name: '',
+      email: '',
+      firm_name: '',
+      address: '',
+      state: '',
+      postal_code: '',
+      phone_number: '',
+    };
   });
   const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [avatarLoading, setAvatarLoading] = useState(false);
-  const [avatarUrl, setAvatarUrl] = useState('');
+  const [avatarUrl, setAvatarUrl] = useState(storedUser?.avatar_url || '');
   const fileInputRef = useRef(null);
-  const { fetchDashboardData } = useDashboard();
+  const { fetchDashboardData } = useDashboard(); 
   const { updateUser } = UseAuth();
 
   useEffect(() => {
     const fetchProfile = async () => {
-      setLoading(true);
+               // Only show loading if we don't have any stored user data
+      if (!storedUser || Object.keys(storedUser).length === 0) {
+        setLoading(true);
+      }
+      
       try {
+        // First, try to use data from auth context if available
+        if (storedUser && Object.keys(storedUser).length > 0) {
+          const profileData = {
+            first_name: storedUser.first_name || '',
+            last_name: storedUser.last_name || '',
+            email: storedUser.email || '',
+            firm_name: storedUser.firm_name || '',
+            address: storedUser.address || '',
+            state: storedUser.state || '',
+            postal_code: storedUser.postal_code || '',
+            phone_number: storedUser.phone_number || '',
+          };
+          setProfile(profileData);
+          setAvatarUrl(storedUser.avatar_url || '');
+        }
+
+        // Then fetch fresh data from API to ensure we have the latest
         const res = await getUserProfile();
         if (res && res.data) {
           const profileData = {
@@ -44,18 +88,46 @@ function Settings() {
           setAvatarUrl(res.data.avatar_url || '');
           
           // Update auth context with complete profile data including avatar
-          if (res.data.avatar_url) {
-            updateUser({ ...profileData, avatar_url: res.data.avatar_url });
-          }
+          updateUser({ ...profileData, avatar_url: res.data.avatar_url || '' });
         }
       } catch (error) {
-        toast.error('Failed to load profile');
+        console.error('Failed to load profile:', error);
+        // Don't show error toast if we have stored user data
+        if (!storedUser || Object.keys(storedUser).length === 0) {
+          toast.error('Failed to load profile');
+        }
       } finally {
         setLoading(false);
       }
     };
     fetchProfile();
-  }, [updateUser]);
+  }, []); // Remove updateUser dependency to prevent infinite loop
+
+  // Listen for user updates from other components (only for avatar updates)
+  useEffect(() => {
+    const updateStoredUser = () => {
+      try {
+        const user = JSON.parse(localStorage.getItem('user') || 'null');
+        // Only update avatar URL, don't reset the entire storedUser state
+        if (user && user.avatar_url && user.avatar_url !== avatarUrl) {
+          setAvatarUrl(user.avatar_url);
+        }
+      } catch {
+        // Ignore errors
+      }
+    };
+    
+    // Listen for storage events (when avatar is updated)
+    window.addEventListener('storage', updateStoredUser);
+    
+    // Custom event for same-tab localStorage updates
+    window.addEventListener('userUpdated', updateStoredUser);
+    
+    return () => {
+      window.removeEventListener('storage', updateStoredUser);
+      window.removeEventListener('userUpdated', updateStoredUser);
+    };
+  }, [avatarUrl]); // Only depend on avatarUrl to prevent unnecessary re-renders
 
   const handleAvatarUpload = async (event) => {
     const file = event.target.files[0];
@@ -106,7 +178,7 @@ function Settings() {
   };
 
   const handleSave = async () => {
-    setLoading(true);
+    setSaving(true);
     try {
       const payload = {
         first_name: profile.first_name,
@@ -135,7 +207,7 @@ function Settings() {
       console.error('Profile update error:', error);
       toast.error('Failed to update profile: ' + error.message);
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
   };
 
@@ -182,13 +254,16 @@ function Settings() {
             <div className="md:col-span-2 mb-4">
               <div className="flex items-center gap-6">
                 <div className="relative">
-                  <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-gray-200 bg-gray-100 flex items-center justify-center">
+                  <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-gray-200 bg-[#ffece5] flex items-center justify-center">
                     {avatarUrl ? (
                       <img
                         src={avatarUrl}
                         alt="Profile"
                         className="w-full h-full object-cover object-center rounded-full"
-                        style={{ aspectRatio: '1 / 1' }}
+                        onError={(e) => {
+                          console.log('Avatar failed to load:', avatarUrl);
+                          e.target.style.display = 'none';
+                        }}
                       />
                     ) : (
                       <div className="w-full h-full bg-[#1983D5] rounded-full flex items-center justify-center text-white text-xl font-semibold">
@@ -316,10 +391,10 @@ function Settings() {
             <div className="md:col-span-2 mt-4 flex justify-end">
               <button
                 onClick={handleSave}
-                disabled={loading}
-                className="bg-[#101928] text-white px-6 py-2 rounded-md hover:bg-opacity-90 text-sm disabled:opacity-60"
+                disabled={saving}
+                className="bg-[#101928] text-white px-6 py-2 rounded-md hover:bg-opacity-90 text-sm disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:bg-opacity-100"
               >
-                {loading ? 'Saving...' : 'Save'}
+                {saving ? 'Saving...' : 'Save'}
               </button>
             </div>
           </div>
