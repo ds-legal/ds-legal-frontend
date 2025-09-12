@@ -10,6 +10,8 @@ import "react-datepicker/dist/react-datepicker.css";
 function Invoice() {
   const [startDate, setStartDate] = useState(new Date());
   const [showCalendar, setShowCalendar] = useState(false);
+  const [statusFilter, setStatusFilter] = useState('unpaid');
+  const [timeFrame, setTimeFrame] = useState('day');
     return (
         <>
         <div className="lg:px-8 py-4 px-4 max-w-5/6 lg:max-w-full">
@@ -34,14 +36,24 @@ function Invoice() {
         </div>
         {/* headers */}
           <div className="lg:bg-white shadow lg:px-10 py-3 mt-4 flex  lg:flex-row flex-col gap-2 lg:justify-between lg:flex-col">
-          <div className="border border-[#E4E7EC] px-4 rounded-md bg-red
+          <div className="border border-[#E4E7EC] px-4 rounded-md bg-white
            lg:shadow-sm h-9 flex items-center w-1/3 lg:w-auto text-[12px]">
-            <div className="flex items-center gap-1 pr-4 h-full border-r border-[#D0D5DD] w-auto">
-              <h3 className="text-[#101928]">Paid</h3>   
-            </div>
-            <div className="flex items-center gap-1 pl-4">
-              <h3 className="text-[##667185]">Upaid</h3>   
-            </div>
+            <button 
+              onClick={() => setStatusFilter('paid')}
+              className={`flex items-center gap-1 pr-4 h-full border-r border-[#D0D5DD] w-auto ${
+                statusFilter === 'paid' ? 'text-[#101928]' : 'text-[#667185]'
+              }`}
+            >
+              <h3>Paid</h3>   
+            </button>
+            <button 
+              onClick={() => setStatusFilter('unpaid')}
+              className={`flex items-center gap-1 pl-4 ${
+                statusFilter === 'unpaid' ? 'text-[#101928]' : 'text-[#667185]'
+              }`}
+            >
+              <h3>Unpaid</h3>   
+            </button>
            </div>
            {/* date */}
           <div className="lg:flex justify-between gap-2  lg:flex-row flex-col  ">
@@ -81,25 +93,45 @@ function Invoice() {
           </div>
           </div>
           <div className="border border-[#E4E7EC] px-4 rounded-md mt-2 lg:mt-0 bg-[#F9FAFB] w-2/3 shadow-sm h-9 flex items-center lg:w-auto text-[12px]">
-            <div className="flex items-center gap-1 pr-4 h-full border-r border-[#D0D5DD]">
-              <h3 className="text-[#101928]">Day</h3>   
-            </div>
-            <div className="flex items-center gap-1 pl-4 pr-4 h-full border-r border-[#D0D5DD]">
-              <h3 className="text-[##667185]">Week</h3>   
-            </div>
-             <div className="flex items-center gap-1 pl-4 pr-4 h-full border-r border-[#D0D5DD]">
-              <h3 className="text-[##667185]">Month</h3>   
-            </div> 
-              <div className="flex items-center gap-1 pl-4">
-              <h3 className="text-[##667185]">Year</h3>   
-            </div>
+            <button 
+              onClick={() => setTimeFrame('day')}
+              className={`flex items-center gap-1 pr-4 h-full border-r border-[#D0D5DD] ${
+                timeFrame === 'day' ? 'text-[#101928]' : 'text-[#667185]'
+              }`}
+            >
+              <h3>Day</h3>   
+            </button>
+            <button 
+              onClick={() => setTimeFrame('week')}
+              className={`flex items-center gap-1 pl-4 pr-4 h-full border-r border-[#D0D5DD] ${
+                timeFrame === 'week' ? 'text-[#101928]' : 'text-[#667185]'
+              }`}
+            >
+              <h3>Week</h3>   
+            </button>
+            <button 
+              onClick={() => setTimeFrame('month')}
+              className={`flex items-center gap-1 pl-4 pr-4 h-full border-r border-[#D0D5DD] ${
+                timeFrame === 'month' ? 'text-[#101928]' : 'text-[#667185]'
+              }`}
+            >
+              <h3>Month</h3>   
+            </button> 
+            <button 
+              onClick={() => setTimeFrame('year')}
+              className={`flex items-center gap-1 pl-4 ${
+                timeFrame === 'year' ? 'text-[#101928]' : 'text-[#667185]'
+              }`}
+            >
+              <h3>Year</h3>   
+            </button>
            </div>
           </div>
             {/* date */}
 
         </div>
          <div>
-          <InvoiceTable/>
+          <InvoiceTable statusFilter={statusFilter} />
          </div>
         </div>
         </>

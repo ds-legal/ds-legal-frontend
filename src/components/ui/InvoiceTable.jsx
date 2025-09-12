@@ -1,92 +1,119 @@
-import React from 'react';
-
-const invoices = [
-  {
-    id: 'INV001',
-    clientName: 'John Doe',
-    amount: '$1,000',
-    paymentStatus: 'Overdue',
-    dueDate: '2025-05-20',
-  },
-  {
-    id: 'INV002',
-    clientName: 'Jane Smith',
-    amount: '$500',
-    paymentStatus: 'Paid',
-    dueDate: '2025-05-10',
-  },
-  {
-    id: 'INV003',
-    clientName: 'Alice Johnson',
-    amount: '$750',
-    paymentStatus: 'Upcoming',
-    dueDate: '2025-05-30',
-  },
-  {
-    id: 'INV003',
-    clientName: 'Alice Johnson',
-    amount: '$750',
-    paymentStatus: 'Upcoming',
-    dueDate: '2025-05-30',
-  },
-  {
-    id: 'INV004',
-    clientName: 'Michael Lee',
-    amount: '$2,300',
-    paymentStatus: 'Paid',
-    dueDate: '2025-05-05',
-  },
-  {
-    id: 'INV005',
-    clientName: 'Linda White',
-    amount: '$1,200',
-    paymentStatus: 'Overdue',
-    dueDate: '2025-05-15',
-  },
-  {
-    id: 'INV006',
-    clientName: 'David Kim',
-    amount: '$980',
-    paymentStatus: 'Upcoming',
-    dueDate: '2025-06-01',
-  },
-  {
-    id: 'INV007',
-    clientName: 'Emma Brown',
-    amount: '$3,400',
-    paymentStatus: 'Paid',
-    dueDate: '2025-05-08',
-  },
-  {
-    id: 'INV008',
-    clientName: 'Daniel Green',
-    amount: '$660',
-    paymentStatus: 'Overdue',
-    dueDate: '2025-05-18',
-  },
-  {
-    id: 'INV009',
-    clientName: 'Sophia Turner',
-    amount: '$890',
-    paymentStatus: 'Upcoming',
-    dueDate: '2025-06-05',
-  },
-];
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { getAllInvoices } from '../../api/invoice_api';
+import LoadingSpinner from '../common/LoadingSpinner';
 
 const getStatusColor = (status) => {
   switch (status) {
-    case 'Overdue':
+    case 'overdue':
       return 'bg-[#FFECE5] text-[#AD3307]';
-    case 'Paid':
+    case 'paid':
       return 'bg-[#E7F6EC] text-[#036B48]';
-    case 'Upcoming':
+    case 'pending':
       return 'bg-[#E4E7EC] text-black';
+    case 'sent':
+      return 'bg-[#E0F2FE] text-[#0369A1]';
+    case 'draft':
+      return 'bg-[#F3F4F6] text-[#374151]';
     default:
       return 'bg-gray-300 text-black';
   }
 };
 
-const InvoiceTable = () => {
+const formatCurrency = (amount, currency = 'USD') => {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: currency,
+  }).format(amount);
+};
+
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
+};
+
+const InvoiceTable = ({ statusFilter, dateFilter }) => {
+  const [invoices, setInvoices] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchInvoices = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        const params = new URLSearchParams();
+        if (dateFilter) {
+          params.append('start_date', dateFilter.start);
+          params.append('end_date', dateFilter.end);
+        }
+        
+        const response = await getAllInvoices(params.toString());
+        
+        if (response?.success && response?.data) {
+          let filteredInvoices = response.data;
+          
+          // Frontend filtering for status
+          if (statusFilter && statusFilter !== 'all') {
+            if (statusFilter === 'paid') {
+              // Show only invoices with status: 'paid'
+              filteredInvoices = response.data.filter(invoice => invoice.status === 'paid');
+            } else if (statusFilter === 'unpaid') {
+              // Show only invoices that are NOT paid (pending, sent, draft, overdue, etc.)
+              filteredInvoices = response.data.filter(invoice => 
+                invoice.status !== 'paid' && 
+                ['pending', 'sent', 'draft', 'overdue'].includes(invoice.status)
+              );
+            }
+          } else {
+            // Show all invoices when statusFilter is 'all'
+            filteredInvoices = response.data;
+          }
+          
+          setInvoices(filteredInvoices);
+        } else {
+          throw new Error(response?.message || 'Failed to fetch invoices');
+        }
+      } catch (error) {
+        console.error('Error fetching invoices:', error);
+        setError('Failed to load invoices');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchInvoices();
+  }, [statusFilter, dateFilter]);
+
+  if (loading) {
+    return (
+      <div className="py-8 flex justify-center">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="py-8 text-center">
+        <p className="text-red-500">{error}</p>
+      </div>
+    );
+  }
+
+  if (invoices.length === 0) {
+    return (
+      <div className="py-8 text-center">
+        <p className="text-gray-500">No invoices found</p>
+      </div>
+    );
+  }
+
   return (
      <div className="py-4">
       <div className="overflow-x-auto">
@@ -106,23 +133,26 @@ const InvoiceTable = () => {
             <tbody>
               {invoices.map((invoice) => (
                 <tr key={invoice.id} className="border-t border-gray-300">
-                  <td className="px-4 py-2">{invoice.id}</td>
-                  <td className="px-4 py-2">{invoice.clientName}</td>
-                  <td className="px-4 py-2">{invoice.amount}</td>
+                  <td className="px-4 py-2">{invoice.invoice_number}</td>
+                  <td className="px-4 py-2">{invoice.client_name}</td>
+                  <td className="px-4 py-2">{formatCurrency(invoice.total_amount, invoice.currency)}</td>
                   <td className="px-4 py-2">
-                    <button
+                    <span
                       className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                        invoice.paymentStatus
+                        invoice.status
                       )}`}
                     >
-                      {invoice.paymentStatus}
-                    </button>
+                      {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
+                    </span>
                   </td>
-                  <td className="px-4 py-2">{invoice.dueDate}</td>
+                  <td className="px-4 py-2">{formatDate(invoice.due_date)}</td>
                   <td className="px-4 py-2">
-                    <button className="px-3 py-1 border-[#1983D5] border-2 rounded-[12px] text-[#1983D5] text-xs">
+                    <Link 
+                      to={`/invoice-preview/${invoice.id}`}
+                      className="px-3 py-1 border-[#1983D5] border-2 rounded-[12px] text-[#1983D5] text-xs hover:bg-[#1983D5] hover:text-white transition-colors"
+                    >
                       View
-                    </button>
+                    </Link>
                   </td>
                 </tr>
               ))}

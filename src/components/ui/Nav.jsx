@@ -1,10 +1,44 @@
 import { ChevronDown, Search, Bell, User, Home } from "lucide-react";
 import { NAV_ITEMS } from "./Sidebar";
 import { useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
 import Logo from "../../assets/logo-color.png"
 
 const Nav = () => {
     const location = useLocation();
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        // Get user data from localStorage
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+            try {
+                setUser(JSON.parse(storedUser));
+            } catch (error) {
+                console.error('Error parsing user data:', error);
+            }
+        }
+
+        // Listen for user updates
+        const handleUserUpdate = () => {
+            const updatedUser = localStorage.getItem('user');
+            if (updatedUser) {
+                try {
+                    setUser(JSON.parse(updatedUser));
+                } catch (error) {
+                    console.error('Error parsing updated user data:', error);
+                }
+            }
+        };
+
+        window.addEventListener('storage', handleUserUpdate);
+        window.addEventListener('userUpdated', handleUserUpdate);
+
+        return () => {
+            window.removeEventListener('storage', handleUserUpdate);
+            window.removeEventListener('userUpdated', handleUserUpdate);
+        };
+    }, []);
 
     // Find the active nav item that matches the current path
     const activePageItem = NAV_ITEMS.find(
@@ -53,8 +87,19 @@ const Nav = () => {
 
                 {/* User dropdown */}
                 <div className="flex items-center space-x-2 cursor-pointer">
-                    <div className="h-8 w-8 rounded-full bg-[#ffece5] flex items-center justify-center">
-                        <User className="h-4 w-4 text-black" />
+                    <div className="h-8 w-8 rounded-full bg-[#ffece5] flex items-center justify-center overflow-hidden">
+                        {user?.avatar_url ? (
+                            <img 
+                                src={user.avatar_url} 
+                                alt="User Avatar" 
+                                className="h-full w-full object-cover rounded-full"
+                                onError={(e) => {
+                                    e.target.style.display = 'none';
+                                    e.target.nextSibling.style.display = 'flex';
+                                }}
+                            />
+                        ) : null}
+                        <User className="h-4 w-4 text-black" style={{ display: user?.avatar_url ? 'none' : 'flex' }} />
                     </div>
                     <ChevronDown className="hidden sm:block h-4 w-4 text-gray-600" />
                 </div>
