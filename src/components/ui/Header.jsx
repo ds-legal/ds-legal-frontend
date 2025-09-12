@@ -1,4 +1,4 @@
-import { ChevronDown, Search, Bell, User, Home } from "lucide-react";
+import { ChevronDown, Search, Bell, User, Home, FileText } from "lucide-react";
 import { NAV_ITEMS } from "./Sidebar";
 import { useLocation } from "react-router-dom";
 import logo from "../../assets/logo-color.png";
@@ -77,6 +77,11 @@ const Header = () => {
                             {activePageItem.name}
                         </span>
                    </div>
+                    </>
+                ) : location.pathname.startsWith('/invoice-preview/') ? (
+                    <>
+                        <FileText className="h-5 w-5 text-gray-600" />
+                        <span className="text-base font-medium">Invoice Preview</span>
                     </>
                 ) : (
                     <>

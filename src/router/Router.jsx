@@ -29,6 +29,7 @@ import FirmInfo from "../pages/InvoiceScreens/FirmInfo";
 import Receipts from "../pages/InvoiceScreens/Receipts";
 import QuickInvoice from "../pages/InvoiceScreens/QuickInvoice";
 import CreateInvoice from "../pages/CreateInvoice";
+import InvoicePreview from "../pages/InvoicePreview";
 import VerifyMail from "../pages/authentication/VerifyEmail/VerifyEmail";
 import ApproveMail from "../pages/authentication/VerifyEmail/ApproveEmail";
 import EditTasks from "../pages/EditTask";
@@ -161,6 +162,14 @@ function AppRoutes() {
                 element={
                   <ProctedRoute>
                    <CreateInvoice/>
+                  </ProctedRoute>
+                }
+              />
+              <Route
+                path="/invoice-preview/:id"
+                element={
+                  <ProctedRoute>
+                   <InvoicePreview/>
                   </ProctedRoute>
                 }
               />
