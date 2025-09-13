@@ -115,49 +115,83 @@ const InvoiceTable = ({ statusFilter, dateFilter }) => {
   }
 
   return (
-     <div className="py-4">
-      <div className="overflow-x-auto">
-        {/* Set a max height and allow vertical scroll */}
-        <div className=" overflow-x-auto">
-          <table className="w-full  rounded-md text-sm border-gray-100 border-2">
-            <thead className="bg-gray-100 shadow sticky top-0 z-10">
-              <tr className="text-[#344054]">
-                <th className="px-4 py-2 text-left">Invoice ID</th>
-                <th className="px-4 py-2 text-left">Client Name</th>
-                <th className="px-4 py-2 text-left">Amount</th>
-                <th className="px-4 py-2 text-left">Payment Status</th>
-                <th className="px-4 py-2 text-left">Due Date</th>
-                <th className="px-4 py-2 text-left">Action</th>
+    <div className="bg-white shadow-lg rounded-md overflow-hidden">
+      {/* Desktop Table View */}
+      <div className="hidden lg:block overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead className="bg-gray-50">
+            <tr className="text-[#344054]">
+              <th className="px-6 py-4 text-left font-medium">Invoice ID</th>
+              <th className="px-6 py-4 text-left font-medium">Client Name</th>
+              <th className="px-6 py-4 text-left font-medium">Amount</th>
+              <th className="px-6 py-4 text-left font-medium">Payment Status</th>
+              <th className="px-6 py-4 text-left font-medium">Due Date</th>
+              <th className="px-6 py-4 text-left font-medium">Action</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-200">
+            {invoices.map((invoice) => (
+              <tr key={invoice.id} className="hover:bg-gray-50">
+                <td className="px-6 py-4 text-sm text-gray-900">{invoice.invoice_number}</td>
+                <td className="px-6 py-4 text-sm text-gray-900">{invoice.client_name}</td>
+                <td className="px-6 py-4 text-sm text-gray-900 font-medium">{formatCurrency(invoice.total_amount, invoice.currency)}</td>
+                <td className="px-6 py-4">
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                      invoice.status
+                    )}`}
+                  >
+                    {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
+                  </span>
+                </td>
+                <td className="px-6 py-4 text-sm text-gray-900">{formatDate(invoice.due_date)}</td>
+                <td className="px-6 py-4">
+                  <Link 
+                    to={`/invoice-preview/${invoice.id}`}
+                    className="px-4 py-2 border-[#1983D5] border-2 rounded-[6px] text-[#1983D5] text-sm font-medium hover:bg-[#1983D5] hover:text-white transition-colors"
+                  >
+                    View
+                  </Link>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {invoices.map((invoice) => (
-                <tr key={invoice.id} className="border-t border-gray-300">
-                  <td className="px-4 py-2">{invoice.invoice_number}</td>
-                  <td className="px-4 py-2">{invoice.client_name}</td>
-                  <td className="px-4 py-2">{formatCurrency(invoice.total_amount, invoice.currency)}</td>
-                  <td className="px-4 py-2">
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                        invoice.status
-                      )}`}
-                    >
-                      {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
-                    </span>
-                  </td>
-                  <td className="px-4 py-2">{formatDate(invoice.due_date)}</td>
-                  <td className="px-4 py-2">
-                    <Link 
-                      to={`/invoice-preview/${invoice.id}`}
-                      className="px-3 py-1 border-[#1983D5] border-2 rounded-[12px] text-[#1983D5] text-xs hover:bg-[#1983D5] hover:text-white transition-colors"
-                    >
-                      View
-                    </Link>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Mobile Card View */}
+      <div className="lg:hidden">
+        <div className="divide-y divide-gray-200">
+          {invoices.map((invoice) => (
+            <div key={invoice.id} className="p-4">
+              <div className="flex justify-between items-start mb-3">
+                <div>
+                  <h3 className="text-sm font-medium text-gray-900">{invoice.invoice_number}</h3>
+                  <p className="text-sm text-gray-600">{invoice.client_name}</p>
+                </div>
+                <span
+                  className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                    invoice.status
+                  )}`}
+                >
+                  {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
+                </span>
+              </div>
+              
+              <div className="flex justify-between items-center">
+                <div>
+                  <p className="text-sm font-medium text-gray-900">{formatCurrency(invoice.total_amount, invoice.currency)}</p>
+                  <p className="text-xs text-gray-500">Due: {formatDate(invoice.due_date)}</p>
+                </div>
+                <Link 
+                  to={`/invoice-preview/${invoice.id}`}
+                  className="px-4 py-2 border-[#1983D5] border-2 rounded-[6px] text-[#1983D5] text-sm font-medium hover:bg-[#1983D5] hover:text-white transition-colors"
+                >
+                  View
+                </Link>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>

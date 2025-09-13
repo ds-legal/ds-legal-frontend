@@ -14,122 +14,126 @@ function Invoice() {
   const [timeFrame, setTimeFrame] = useState('day');
     return (
         <>
-        <div className="lg:px-8 py-4 px-4 max-w-5/6 lg:max-w-full">
-         <div className="flex justify-between lg:flex-row flex-col gap-4 ">
+        <div className="lg:w-[80%] w-[90%] mx-auto my-10 pb-20 sm:pb-8">
+         <div className="flex justify-between lg:flex-row flex-col gap-4 mb-6">
           <div>
-            <h4 className="text-[24px] font-[600] text-[#000000]">Invoice</h4>
-            <h4 className="text-[16px] font-[500] text-[#475367]">
-             Manage all your tasks and prioritize better
-            </h4>
+            <h2 className="text-[24px] font-[600] text-[#212121]">Invoice</h2>
+            <p className="text-[16px] font-[500] text-[#475367]">
+             Manage all your invoices and track payments
+            </p>
           </div>
           <div className="flex gap-2">
-         <Link to="/quickInvoice" className=" dmsansFonts flex  justify-center border-[#1983D5] border-2 bg-white  text-[#1983D5] rounded-[40px]
-           text-white lg:px-4 lg:py-1 py-3 px-4 items-center w-[40%] lg:w-auto ">
-            <span className="lg:text-[16px] text-[12px] text-[#1983D5]">Generate invoice</span>
+         <Link to="/quickInvoice" className="flex justify-center border-[#1983D5] border-2 bg-white text-[#1983D5] rounded-[6px] px-4 py-3 items-center w-full sm:w-auto">
+            <span className="text-[14px] font-medium">Generate invoice</span>
           </Link>
-           <Link to="/createInvoice" className=" dmsansFonts flex  justify-center bg-[#1983D5] rounded-[40px]
-           text-white lg:px-4 lg:py-1 py-3 px-4 items-center w-[40%] lg:w-auto ">
-            <span className="lg:text-[16px] text-[12px]">Create invoice</span>
+           <Link to="/createInvoice" className="flex justify-center bg-[#1983D5] rounded-[6px] text-white px-4 py-3 items-center w-full sm:w-auto">
+            <span className="text-[14px] font-medium">Create invoice</span>
           </Link>
            </div>
          
         </div>
-        {/* headers */}
-          <div className="lg:bg-white shadow lg:px-10 py-3 mt-4 flex  lg:flex-row flex-col gap-2 lg:justify-between lg:flex-col">
-          <div className="border border-[#E4E7EC] px-4 rounded-md bg-white
-           lg:shadow-sm h-9 flex items-center w-1/3 lg:w-auto text-[12px]">
-            <button 
-              onClick={() => setStatusFilter('paid')}
-              className={`flex items-center gap-1 pr-4 h-full border-r border-[#D0D5DD] w-auto ${
-                statusFilter === 'paid' ? 'text-[#101928]' : 'text-[#667185]'
-              }`}
-            >
-              <h3>Paid</h3>   
-            </button>
-            <button 
-              onClick={() => setStatusFilter('unpaid')}
-              className={`flex items-center gap-1 pl-4 ${
-                statusFilter === 'unpaid' ? 'text-[#101928]' : 'text-[#667185]'
-              }`}
-            >
-              <h3>Unpaid</h3>   
-            </button>
-           </div>
-           {/* date */}
-          <div className="lg:flex justify-between gap-2  lg:flex-row flex-col  ">
-          <div className="flex gap-2 ">
-          <div className="relative border border-[#E4E7EC] px-4 rounded-md lg:bg-[#F9FAFB] shadow-sm">
-            <div
-              onClick={() => setShowCalendar(!showCalendar)}
-              className="flex items-center gap-2 border h-9 border-[#F9FAFB] z-50 px-4 py-1 w-auto cursor-pointer"
-            >
-              <h4 className="text-[#344054] text-[12px] font-[600] ">
-                {startDate.toLocaleDateString("en-US", {
-                  month: "long",
-                  day: "numeric",
-                  year: "numeric",
-                })}
-              </h4>
-              {showCalendar ? <IoIosArrowUp /> : <IoIosArrowDown />}
-            </div>
+        {/* Filter Section */}
+          <div className="bg-white shadow-lg px-4 sm:px-6 lg:px-10 py-6 rounded-md">
+            <div className="flex flex-col lg:flex-row gap-4 lg:justify-between lg:items-center">
+              {/* Status Filter */}
+              <div className="flex border border-[#E4E7EC] rounded-md bg-white shadow-sm h-10 w-full lg:w-auto">
+                <button 
+                  onClick={() => setStatusFilter('paid')}
+                  className={`flex items-center justify-center gap-1 px-4 h-full border-r border-[#D0D5DD] flex-1 lg:flex-none ${
+                    statusFilter === 'paid' ? 'text-[#101928] bg-gray-50' : 'text-[#667185] hover:bg-gray-50'
+                  }`}
+                >
+                  <span className="text-[14px] font-medium">Paid</span>   
+                </button>
+                <button 
+                  onClick={() => setStatusFilter('unpaid')}
+                  className={`flex items-center justify-center gap-1 px-4 flex-1 lg:flex-none ${
+                    statusFilter === 'unpaid' ? 'text-[#101928] bg-gray-50' : 'text-[#667185] hover:bg-gray-50'
+                  }`}
+                >
+                  <span className="text-[14px] font-medium">Unpaid</span>   
+                </button>
+               </div>
+              {/* Date and Time Frame Controls */}
+              <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
+                {/* Date Picker */}
+                <div className="relative border border-[#E4E7EC] rounded-md bg-white shadow-sm">
+                  <div
+                    onClick={() => setShowCalendar(!showCalendar)}
+                    className="flex items-center gap-2 px-4 py-2 cursor-pointer min-w-[200px]"
+                  >
+                    <span className="text-[#344054] text-[14px] font-medium">
+                      {startDate.toLocaleDateString("en-US", {
+                        month: "long",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
+                    </span>
+                    {showCalendar ? <IoIosArrowUp className="text-gray-500" /> : <IoIosArrowDown className="text-gray-500" />}
+                  </div>
 
-            {showCalendar && (
-              <div className="absolute right-0 mt-2 bg-white border border-gray-200 rounded shadow z-50  max-w-1/4">
-                <DatePicker
-                  selected={startDate}
-                  onChange={(date) => {
-                    setStartDate(date);
-                    setShowCalendar(false);
-                  }}
-                  inline
-                />
+                  {showCalendar && (
+                    <div className="absolute right-0 mt-2 bg-white border border-gray-200 rounded shadow-lg z-50">
+                      <DatePicker
+                        selected={startDate}
+                        onChange={(date) => {
+                          setStartDate(date);
+                          setShowCalendar(false);
+                        }}
+                        inline
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* Navigation Arrows */}
+                <div className="border border-[#E4E7EC] rounded-md bg-white shadow-sm flex justify-between items-center px-4 py-2">
+                  <button className="text-gray-600 hover:text-gray-800">
+                    <IoIosArrowBack className="text-lg" />
+                  </button>
+                  <button className="text-gray-600 hover:text-gray-800">
+                    <IoIosArrowForward className="text-lg" />
+                  </button>
+                </div>
+
+                {/* Time Frame Selector */}
+                <div className="flex border border-[#E4E7EC] rounded-md bg-white shadow-sm h-10 w-full sm:w-auto">
+                  <button 
+                    onClick={() => setTimeFrame('day')}
+                    className={`flex items-center justify-center px-3 h-full border-r border-[#D0D5DD] flex-1 sm:flex-none ${
+                      timeFrame === 'day' ? 'text-[#101928] bg-gray-50' : 'text-[#667185] hover:bg-gray-50'
+                    }`}
+                  >
+                    <span className="text-[12px] font-medium">Day</span>   
+                  </button>
+                  <button 
+                    onClick={() => setTimeFrame('week')}
+                    className={`flex items-center justify-center px-3 h-full border-r border-[#D0D5DD] flex-1 sm:flex-none ${
+                      timeFrame === 'week' ? 'text-[#101928] bg-gray-50' : 'text-[#667185] hover:bg-gray-50'
+                    }`}
+                  >
+                    <span className="text-[12px] font-medium">Week</span>   
+                  </button>
+                  <button 
+                    onClick={() => setTimeFrame('month')}
+                    className={`flex items-center justify-center px-3 h-full border-r border-[#D0D5DD] flex-1 sm:flex-none ${
+                      timeFrame === 'month' ? 'text-[#101928] bg-gray-50' : 'text-[#667185] hover:bg-gray-50'
+                    }`}
+                  >
+                    <span className="text-[12px] font-medium">Month</span>   
+                  </button> 
+                  <button 
+                    onClick={() => setTimeFrame('year')}
+                    className={`flex items-center justify-center px-3 flex-1 sm:flex-none ${
+                      timeFrame === 'year' ? 'text-[#101928] bg-gray-50' : 'text-[#667185] hover:bg-gray-50'
+                    }`}
+                  >
+                    <span className="text-[12px] font-medium">Year</span>   
+                  </button>
+                 </div>
               </div>
-            )}
+            </div>
           </div>
-
-          <div className="border border-[#E4E7EC] px-4 rounded-md bg-[#F9FAFB] shadow-sm flex justify-between text-[12px] items-center">
-           <span className="text-[20px] "> <IoIosArrowBack /></span>
-           <span  className="text-[20px] "> <IoIosArrowForward /></span>
-          </div>
-          </div>
-          <div className="border border-[#E4E7EC] px-4 rounded-md mt-2 lg:mt-0 bg-[#F9FAFB] w-2/3 shadow-sm h-9 flex items-center lg:w-auto text-[12px]">
-            <button 
-              onClick={() => setTimeFrame('day')}
-              className={`flex items-center gap-1 pr-4 h-full border-r border-[#D0D5DD] ${
-                timeFrame === 'day' ? 'text-[#101928]' : 'text-[#667185]'
-              }`}
-            >
-              <h3>Day</h3>   
-            </button>
-            <button 
-              onClick={() => setTimeFrame('week')}
-              className={`flex items-center gap-1 pl-4 pr-4 h-full border-r border-[#D0D5DD] ${
-                timeFrame === 'week' ? 'text-[#101928]' : 'text-[#667185]'
-              }`}
-            >
-              <h3>Week</h3>   
-            </button>
-            <button 
-              onClick={() => setTimeFrame('month')}
-              className={`flex items-center gap-1 pl-4 pr-4 h-full border-r border-[#D0D5DD] ${
-                timeFrame === 'month' ? 'text-[#101928]' : 'text-[#667185]'
-              }`}
-            >
-              <h3>Month</h3>   
-            </button> 
-            <button 
-              onClick={() => setTimeFrame('year')}
-              className={`flex items-center gap-1 pl-4 ${
-                timeFrame === 'year' ? 'text-[#101928]' : 'text-[#667185]'
-              }`}
-            >
-              <h3>Year</h3>   
-            </button>
-           </div>
-          </div>
-            {/* date */}
-
-        </div>
          <div>
           <InvoiceTable statusFilter={statusFilter} />
          </div>
