@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { initiateGoogleOAuth, handleGoogleCallback as apiHandleGoogleCallback, googleSignInWithToken, getUserProfile } from '../api/auth_api';
 
 const BaseUrl = import.meta.env.VITE_BaseUrl;
 
@@ -139,8 +140,123 @@ export const AuthProvider = ({ children }) => {
     })
    }
 
+  // Google OAuth functions
+  const handleGoogleSignIn = async () => {
+    try {
+      console.log('Initiating Google OAuth via backend...');
+      
+      // Call backend to get OAuth URL securely
+      const response = await initiateGoogleOAuth();
+      
+      if (response.auth_url) {
+        console.log('Received OAuth URL from backend:', response.auth_url);
+        
+        // Store state for verification if provided
+        if (response.state) {
+          sessionStorage.setItem('google_oauth_state', response.state);
+        }
+        
+        // Redirect to Google OAuth URL provided by backend
+        window.location.href = response.auth_url;
+      } else {
+        throw new Error('No OAuth URL received from backend');
+      }
+    } catch (error) {
+      console.log('Failed to initiate Google OAuth:', error);
+      throw error;
+    }
+  };
+
+  const handleGoogleCallback = async (code, state) => {
+    try {
+      console.log('Auth context: Handling Google callback...');
+      console.log('Auth context: Code:', code);
+      console.log('Auth context: State:', state);
+      
+      const response = await apiHandleGoogleCallback(code, state);
+      console.log('Auth context: API response:', response);
+      
+      if (response.status_code === 200) {
+        // Store tokens and user data
+        localStorage.setItem("token", response.access_token);
+        localStorage.setItem("refresh_token", response.refresh_token);
+        localStorage.setItem("user", JSON.stringify(response.data));
+        setToken(response.access_token);
+        setRefreshToken(response.refresh_token);
+        setUser(response.data);
+        
+        // Fetch complete user profile to get avatar and other details
+        try {
+          const profileResponse = await getUserProfile();
+          if (profileResponse.data) {
+            const completeUserData = { ...response.data, ...profileResponse.data };
+            localStorage.setItem("user", JSON.stringify(completeUserData));
+            setUser(completeUserData);
+          }
+        } catch (error) {
+          console.log('Failed to fetch complete profile after Google login:', error);
+        }
+        
+        // Dispatch custom event to notify all components about user update
+        window.dispatchEvent(new Event('userUpdated'));
+      }
+      
+      return response;
+    } catch (error) {
+      console.log('Failed to handle Google OAuth callback:', error);
+      throw error;
+    }
+  };
+
+  const handleGoogleSignInWithToken = async (idToken) => {
+    try {
+      const response = await googleSignInWithToken(idToken);
+      
+      if (response.status_code === 200) {
+        // Store tokens and user data
+        localStorage.setItem("token", response.access_token);
+        localStorage.setItem("refresh_token", response.refresh_token);
+        localStorage.setItem("user", JSON.stringify(response.data));
+        setToken(response.access_token);
+        setRefreshToken(response.refresh_token);
+        setUser(response.data);
+        
+        // Fetch complete user profile to get avatar and other details
+        try {
+          const profileResponse = await getUserProfile();
+          if (profileResponse.data) {
+            const completeUserData = { ...response.data, ...profileResponse.data };
+            localStorage.setItem("user", JSON.stringify(completeUserData));
+            setUser(completeUserData);
+          }
+        } catch (error) {
+          console.log('Failed to fetch complete profile after Google login:', error);
+        }
+        
+        // Dispatch custom event to notify all components about user update
+        window.dispatchEvent(new Event('userUpdated'));
+      }
+      
+      return response;
+    } catch (error) {
+      console.log('Failed to sign in with Google token:', error);
+      throw error;
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, RegisterUser , token, refreshToken, LoginUser, updateUser, isInitialized }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      RegisterUser, 
+      token, 
+      refreshToken, 
+      LoginUser, 
+      updateUser, 
+      isInitialized,
+      handleGoogleSignIn,
+      handleGoogleCallback,
+      handleGoogleSignInWithToken
+    }}>
       {children}
     </AuthContext.Provider>
   );

@@ -15,10 +15,11 @@ const schema = z.object({
 
 const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const {LoginUser } = UseAuth()
+  const {LoginUser, handleGoogleSignIn } = UseAuth()
   const [Error, setErrors] = useState(false)
   const [isLoading, setILoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState("")
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false)
   const navigate = useNavigate()
 
   const {
@@ -55,6 +56,18 @@ const LoginForm = () => {
   };
 
   const hasErrors = Object.keys(errors).length > 0;
+
+  const handleGoogleSignInClick = async () => {
+    setIsGoogleLoading(true);
+    try {
+      await handleGoogleSignIn();
+    } catch (error) {
+      toast.error('Failed to sign in with Google');
+      console.log('Google sign-in error:', error);
+    } finally {
+      setIsGoogleLoading(false);
+    }
+  };
 
   return (
     <div className="w-full max-w-sm sm:max-w-md px-2 sm:px-4 lg:px-0">
@@ -153,14 +166,22 @@ const LoginForm = () => {
       {/* Google Button */}
       <button
         type="button"
-        className="w-full flex items-center justify-center gap-3 border border-gray-300 py-2.5 sm:py-3 rounded-lg hover:bg-gray-50 transition"
+        onClick={handleGoogleSignInClick}
+        disabled={isGoogleLoading}
+        className="w-full flex items-center justify-center gap-3 border border-gray-300 py-2.5 sm:py-3 rounded-lg hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        <img
-          src="https://www.svgrepo.com/show/475656/google-color.svg"
-          alt="Google"
-          className="w-4 sm:w-5 h-4 sm:h-5"
-        />
-        <span className="text-gray-700 font-medium text-sm sm:text-base">Google</span>
+        {isGoogleLoading ? (
+          <div className="spinner border-gray-600"></div>
+        ) : (
+          <>
+            <img
+              src="https://www.svgrepo.com/show/475656/google-color.svg"
+              alt="Google"
+              className="w-4 sm:w-5 h-4 sm:h-5"
+            />
+            <span className="text-gray-700 font-medium text-sm sm:text-base">Continue with Google</span>
+          </>
+        )}
       </button>
 
       {/* Footer Links */}
