@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { createInvoice } from '../../api/invoice_api';
 import { getFirmSettings } from '../../api/firm_api';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+import Nav from '../../components/ui/Nav';
 import toast from 'react-hot-toast';
 
 const QuickInvoice = () => {
@@ -169,38 +170,44 @@ const QuickInvoice = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-3xl mx-auto py-8 px-4">
-        <div className="bg-white p-6 rounded-[14px] shadow space-y-6">
-          {/* Title */}
-          <div>
-            <h1 className="text-[24px] font-bold text-[#212121]">Quick Invoice</h1>
-            <hr className="border-t border-gray-300 mt-1" />
-          </div>
+    <>
+      <Nav />
+      <div className='lg:w-[80%] w-[90%] mx-auto my-10'>
+        <div className='flex justify-between items-center mb-6'>
+          <Link to="/invoices" className='flex items-center gap-1 text-[14px] text-[#667185] font-[500]'>
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            <h3>Back</h3>
+          </Link>
+        </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+        <div className='bg-white shadow-lg lg:w-[70%] w-full mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-10 rounded-md'>
+          <h2 className='text-[24px] font-[600] mb-2 text-[#212121]'>Quick Invoice</h2>
+          <hr className='mb-6 bg-[#E9E9E9]' />
+          <form onSubmit={handleSubmit} className='space-y-6'>
             {/* Client Name */}
             <div>
-              <label className="text-sm font-medium text-[#19213D] mb-1 block">Client Name</label>
+              <h4 className='text-[14px] mb-2 font-[500] text-[#101928]'>Client Name</h4>
               <input
                 type="text"
                 name="client_name"
                 value={formData.client_name}
                 onChange={handleInputChange}
                 placeholder="Enter client name"
-                className="w-full p-3 border border-[#D0D5DD] rounded-md focus:outline-none focus:ring-2 focus:ring-[#1983D5] focus:border-transparent"
+                className='w-full rounded-[6px] px-4 border-[#D0D5DD] py-4 border-2'
                 required
               />
             </div>
 
             {/* Purpose Dropdown */}
             <div>
-              <label className="text-[14px] text-[#101928] font-[500] mb-1 block">Purpose</label>
+              <h4 className='text-[14px] mb-2 font-[500] text-[#101928]'>Purpose</h4>
               <select
                 name="purpose"
                 value={formData.purpose}
                 onChange={handleInputChange}
-                className="w-full p-3 border border-[#D0D5DD] rounded-md focus:outline-none focus:ring-2 focus:ring-[#1983D5] focus:border-transparent"
+                className='w-full px-4 border-[#D0D5DD] py-4 border-2 rounded-[6px]'
                 required
               >
                 <option value="">Select purpose</option>
@@ -214,145 +221,106 @@ const QuickInvoice = () => {
             </div>
 
             {/* Amount and Tax */}
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="w-full lg:w-[50%]">
-                <label className="text-[14px] text-[#101928] font-[500] mb-1 block">Amount</label>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
-                  <input
-                    type="number"
-                    value={formData.amount}
-                    onChange={handleAmountChange}
-                    placeholder="0.00"
-                    min="0.01"
-                    step="0.01"
-                    className="w-full pl-8 pr-12 p-3 border border-[#D0D5DD] rounded-md focus:outline-none focus:ring-2 focus:ring-[#1983D5] focus:border-transparent"
-                    required
-                  />
-                  <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex flex-col">
-                    <button
-                      type="button"
-                      onClick={() => setFormData(prev => ({ ...prev, amount: prev.amount + 1 }))}
-                      className="text-gray-400 hover:text-gray-600 text-xs"
-                    >
-                      ▲
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setFormData(prev => ({ ...prev, amount: Math.max(0, prev.amount - 1) }))}
-                      className="text-gray-400 hover:text-gray-600 text-xs"
-                    >
-                      ▼
-                    </button>
-                  </div>
-                </div>
+            <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
+              <div>
+                <h4 className='text-[14px] mb-2 font-[500] text-[#101928]'>Amount</h4>
+                <input
+                  type="number"
+                  value={formData.amount}
+                  onChange={handleAmountChange}
+                  placeholder="0.00"
+                  min="0.01"
+                  step="0.01"
+                  className='w-full rounded-[6px] px-4 border-[#D0D5DD] py-4 border-2'
+                  required
+                />
               </div>
-              <div className="w-full lg:w-[50%]">
-                <label className="text-[14px] text-[#101928] font-[500] mb-1 block">Tax (%)</label>
-                <div className="relative">
-                  <input
-                    type="number"
-                    value={formData.tax_rate}
-                    onChange={handleTaxChange}
-                    placeholder="0"
-                    min="0"
-                    max="100"
-                    step="0.1"
-                    className="w-full pr-12 p-3 border border-[#D0D5DD] rounded-md focus:outline-none focus:ring-2 focus:ring-[#1983D5] focus:border-transparent"
-                  />
-                  <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex flex-col">
-                    <button
-                      type="button"
-                      onClick={() => setFormData(prev => ({ ...prev, tax_rate: Math.min(100, prev.tax_rate + 1) }))}
-                      className="text-gray-400 hover:text-gray-600 text-xs"
-                    >
-                      ▲
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setFormData(prev => ({ ...prev, tax_rate: Math.max(0, prev.tax_rate - 1) }))}
-                      className="text-gray-400 hover:text-gray-600 text-xs"
-                    >
-                      ▼
-                    </button>
-                  </div>
-                </div>
+              <div>
+                <h4 className='text-[14px] mb-2 font-[500] text-[#101928]'>Tax (%)</h4>
+                <input
+                  type="number"
+                  value={formData.tax_rate}
+                  onChange={handleTaxChange}
+                  placeholder="0"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  className='w-full rounded-[6px] px-4 border-[#D0D5DD] py-4 border-2'
+                />
               </div>
             </div>
 
             {/* Due Date and Time */}
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="lg:w-[50%] w-full">
-                <label className="text-[14px] text-[#101928] font-[500] mb-1 block">Due Date</label>
+            <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
+              <div>
+                <h4 className='text-[14px] mb-2 font-[500] text-[#101928]'>Due Date</h4>
                 <input
                   type="date"
                   name="due_date"
                   value={formData.due_date}
                   onChange={handleInputChange}
-                  className="w-full p-3 border border-[#D0D5DD] rounded-md focus:outline-none focus:ring-2 focus:ring-[#1983D5] focus:border-transparent"
+                  className='w-full px-4 border-[#D0D5DD] py-4 border-2 rounded-[6px]'
                   required
                 />
               </div>
-              <div className="lg:w-[50%] w-full">
-                <label className="text-[14px] text-[#101928] font-[500] mb-1 block">Time</label>
+              <div>
+                <h4 className='text-[14px] mb-2 font-[500] text-[#101928]'>Time</h4>
                 <input
                   type="time"
                   name="invoice_time"
                   value={formData.invoice_time}
                   onChange={handleInputChange}
-                  className="w-full p-3 border border-[#D0D5DD] rounded-md focus:outline-none focus:ring-2 focus:ring-[#1983D5] focus:border-transparent"
+                  className='w-full px-4 border-[#D0D5DD] py-4 border-2 rounded-[6px]'
                 />
               </div>
             </div>
 
             {/* Additional Fields */}
-            <div className="space-y-4">
-              <div>
-                <label className="text-[14px] text-[#101928] font-[500] mb-1 block">Client Email (Optional)</label>
-                <input
-                  type="email"
-                  name="client_email"
-                  value={formData.client_email}
-                  onChange={handleInputChange}
-                  placeholder="client@example.com"
-                  className="w-full p-3 border border-[#D0D5DD] rounded-md focus:outline-none focus:ring-2 focus:ring-[#1983D5] focus:border-transparent"
-                />
-              </div>
-              
-              <div>
-                <label className="text-[14px] text-[#101928] font-[500] mb-1 block">Client Address (Optional)</label>
-                <input
-                  type="text"
-                  name="client_address"
-                  value={formData.client_address}
-                  onChange={handleInputChange}
-                  placeholder="Enter client address"
-                  className="w-full p-3 border border-[#D0D5DD] rounded-md focus:outline-none focus:ring-2 focus:ring-[#1983D5] focus:border-transparent"
-                />
-              </div>
+            <div>
+              <h4 className='text-[14px] mb-2 font-[500] text-[#101928]'>Client Email (Optional)</h4>
+              <input
+                type="email"
+                name="client_email"
+                value={formData.client_email}
+                onChange={handleInputChange}
+                placeholder="client@example.com"
+                className='w-full rounded-[6px] px-4 border-[#D0D5DD] py-4 border-2'
+              />
+            </div>
+            
+            <div>
+              <h4 className='text-[14px] mb-2 font-[500] text-[#101928]'>Client Address (Optional)</h4>
+              <input
+                type="text"
+                name="client_address"
+                value={formData.client_address}
+                onChange={handleInputChange}
+                placeholder="Enter client address"
+                className='w-full rounded-[6px] px-4 border-[#D0D5DD] py-4 border-2'
+              />
             </div>
 
             {/* Submit Button */}
-            <div className="flex justify-end pt-4">
+            <div className="flex justify-center">
               <button 
                 type="submit"
                 disabled={loading}
-                className="bg-[#1983D5] rounded-[40px] text-white px-8 py-4 font-medium hover:bg-[#156bb2] transition-all duration-200 text-[14px] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                className="w-full sm:w-auto bg-[#1983D5] text-white px-8 py-4 font-medium hover:bg-[#156bb2] transition-all duration-200 text-[14px] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 rounded-[6px]"
               >
                 {loading ? (
                   <>
                     <LoadingSpinner />
-                    Generating invoice...
+                    <span>Generating invoice...</span>
                   </>
                 ) : (
-                  'Generate invoice'
+                  <span>Generate Invoice</span>
                 )}
               </button>
             </div>
           </form>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

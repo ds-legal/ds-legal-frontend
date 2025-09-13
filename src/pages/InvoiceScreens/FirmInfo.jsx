@@ -186,110 +186,107 @@ const FirmInfo = () => {
         </div>
 
         {/* Main Form Container */}
-        <div className='lg:w-[70%] w-full bg-white shadow-lg mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-10 rounded-[16px]'>
-          <h2 className='text-[24px] text-[#212121] font-[600] mb-8'>Firm Information</h2>
-
+        <div className='bg-white shadow-lg lg:w-[70%] w-full mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-10 rounded-md'>
+          <h2 className='text-[24px] font-[600] mb-2 text-[#212121]'>Firm Information</h2>
+          <hr className='mb-6 bg-[#E9E9E9]' />
           <form onSubmit={handleSubmit} className='space-y-6'>
 
             {/* Firm Name */}
             <div>
-              <label className='text-[#101928] text-[14px] font-[500] mb-1 block'>Firm's name</label>
+              <h4 className='text-[14px] mb-2 font-[500] text-[#101928]'>Firm's name</h4>
               <input 
                 type='text' 
                 value={formData.firm_name}
                 onChange={(e) => handleInputChange('firm_name', e.target.value)}
-                className='w-full bg-[#EFF1F3] border-2 border-[#D0D5DD] rounded-md p-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1983D5] focus:border-transparent' 
+                className='w-full rounded-[6px] px-4 border-[#D0D5DD] py-4 border-2' 
               />
             </div>
 
             {/* Email */}
             <div>
-              <label className='text-[#101928] text-[14px] font-[500] mb-1 block'>Email</label>
+              <h4 className='text-[14px] mb-2 font-[500] text-[#101928]'>Email</h4>
               <input 
                 type='email' 
                 value={formData.firm_email}
                 onChange={(e) => handleInputChange('firm_email', e.target.value)}
-                className='w-full bg-[#EFF1F3] border-2 border-[#D0D5DD] rounded-md p-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1983D5] focus:border-transparent' 
+                className='w-full rounded-[6px] px-4 border-[#D0D5DD] py-4 border-2' 
               />
             </div>
 
             {/* Address */}
             <div>
-              <label className='text-[#101928] text-[14px] font-[500] mb-1 block'>Address</label>
+              <h4 className='text-[14px] mb-2 font-[500] text-[#101928]'>Address</h4>
               <input 
                 type='text' 
                 value={formData.firm_address}
                 onChange={(e) => handleInputChange('firm_address', e.target.value)}
-                className='w-full bg-[#EFF1F3] border-2 border-[#D0D5DD] rounded-md p-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1983D5] focus:border-transparent' 
+                className='w-full rounded-[6px] px-4 border-[#D0D5DD] py-4 border-2' 
               />
             </div>
 
             {/* State and Postal Code */}
-            <div className='grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6'>
+            <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
               <div>
-                <label className='text-[#101928] text-[14px] font-[500] mb-1 block'>State</label>
+                <h4 className='text-[14px] mb-2 font-[500] text-[#101928]'>State</h4>
                 <input 
                   type='text' 
                   value={formData.firm_state}
                   onChange={(e) => handleInputChange('firm_state', e.target.value)}
-                  className='w-full bg-[#EFF1F3] border-2 border-[#D0D5DD] rounded-md p-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1983D5] focus:border-transparent' 
+                  className='w-full rounded-[6px] px-4 border-[#D0D5DD] py-4 border-2' 
                 />
               </div>
               <div>
-                <label className='text-[#101928] text-[14px] font-[500] mb-1 block'>Postal code</label>
+                <h4 className='text-[14px] mb-2 font-[500] text-[#101928]'>Postal code</h4>
                 <input 
                   type='text' 
                   value={formData.firm_postal_code}
                   onChange={(e) => handleInputChange('firm_postal_code', e.target.value)}
-                  className='w-full bg-[#EFF1F3] border-2 border-[#D0D5DD] rounded-md p-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1983D5] focus:border-transparent' 
+                  className='w-full rounded-[6px] px-4 border-[#D0D5DD] py-4 border-2' 
                 />
               </div>
             </div>
 
             {/* Phone Number */}
             <div>
-              <label className='text-[#101928] text-[14px] font-[500] mb-1 block'>Phone number</label>
+              <h4 className='text-[14px] mb-2 font-[500] text-[#101928]'>Phone number</h4>
               <input 
                 type='tel' 
                 value={formData.firm_phone}
                 onChange={(e) => handleInputChange('firm_phone', e.target.value)}
-                className='w-full bg-[#EFF1F3] border-2 border-[#D0D5DD] rounded-md p-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1983D5] focus:border-transparent' 
+                className='w-full rounded-[6px] px-4 border-[#D0D5DD] py-4 border-2' 
               />
             </div>
 
             {/* Business Description */}
             <div>
-              <label className='text-[#101928] text-[14px] font-[500] mb-1 block'>Business Description</label>
+              <h4 className='text-[14px] mb-2 font-[500] text-[#101928]'>Business Description</h4>
               <textarea 
                 value={formData.business_description}
                 onChange={(e) => handleInputChange('business_description', e.target.value)}
                 rows={3}
-                className='w-full bg-[#EFF1F3] border-2 border-[#D0D5DD] rounded-md p-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1983D5] focus:border-transparent' 
+                className='w-full rounded-[6px] px-4 border-[#D0D5DD] py-4 border-2' 
                 placeholder='Describe your business...'
               />
             </div>
 
             {/* Currency and VAT Rate */}
-            <div className='grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6'>
+            <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
               <div>
-                <label className='text-[#101928] text-[14px] font-[500] mb-1 block'>Default Currency</label>
-                <div className='relative'>
-                  <select 
-                    value={formData.default_currency}
-                    onChange={(e) => handleInputChange('default_currency', e.target.value)}
-                    className='w-full bg-[#EFF1F3] border-2 border-[#D0D5DD] rounded-md p-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1983D5] focus:border-transparent appearance-none'
-                  >
-                    {currencies.map(currency => (
-                      <option key={currency.value} value={currency.value}>
-                        {currency.label}
-                      </option>
-                    ))}
-                  </select>
-                  <FiChevronDown className='absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none' />
-                </div>
+                <h4 className='text-[14px] mb-2 font-[500] text-[#101928]'>Default Currency</h4>
+                <select 
+                  value={formData.default_currency}
+                  onChange={(e) => handleInputChange('default_currency', e.target.value)}
+                  className='w-full px-4 border-[#D0D5DD] py-4 border-2 rounded-[6px]'
+                >
+                  {currencies.map(currency => (
+                    <option key={currency.value} value={currency.value}>
+                      {currency.label}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div>
-                <label className='text-[#101928] text-[14px] font-[500] mb-1 block'>Default VAT Rate (%)</label>
+                <h4 className='text-[14px] mb-2 font-[500] text-[#101928]'>Default VAT Rate (%)</h4>
                 <input 
                   type='number' 
                   value={formData.default_vat_rate}
@@ -297,19 +294,19 @@ const FirmInfo = () => {
                   min='0'
                   max='100'
                   step='0.1'
-                  className='w-full bg-[#EFF1F3] border-2 border-[#D0D5DD] rounded-md p-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1983D5] focus:border-transparent' 
+                  className='w-full rounded-[6px] px-4 border-[#D0D5DD] py-4 border-2' 
                 />
               </div>
             </div>
 
             {/* Invoice Number Prefix */}
             <div>
-              <label className='text-[#101928] text-[14px] font-[500] mb-1 block'>Invoice Number Prefix</label>
+              <h4 className='text-[14px] mb-2 font-[500] text-[#101928]'>Invoice Number Prefix</h4>
               <input 
                 type='text' 
                 value={formData.invoice_number_prefix}
                 onChange={(e) => handleInputChange('invoice_number_prefix', e.target.value)}
-                className='w-full bg-[#EFF1F3] border-2 border-[#D0D5DD] rounded-md p-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1983D5] focus:border-transparent' 
+                className='w-full rounded-[6px] px-4 border-[#D0D5DD] py-4 border-2' 
                 placeholder='e.g., DS, INV, etc.'
               />
             </div>
@@ -320,7 +317,7 @@ const FirmInfo = () => {
               
               {/* Reminder Type */}
               <div>
-                <label className='text-[#101928] text-[14px] font-[500] mb-2 block'>Reminder Type</label>
+                <h4 className='text-[14px] mb-2 font-[500] text-[#101928]'>Reminder Type</h4>
                 <div className='flex flex-wrap gap-2'>
                   {reminderTypes.map((type) => (
                     <button
@@ -349,13 +346,13 @@ const FirmInfo = () => {
                     onChange={(e) => setSelectedDay(parseInt(e.target.value) || 1)}
                     min='1'
                     max='31'
-                    className='w-16 bg-[#EFF1F3] border-2 border-[#D0D5DD] rounded-md p-2 text-sm text-center focus:outline-none focus:ring-2 focus:ring-[#1983D5] focus:border-transparent'
+                    className='w-16 rounded-[6px] px-2 border-[#D0D5DD] py-2 border-2 text-center'
                   />
                   <div className='relative'>
                     <button
                       type='button'
                       onClick={() => setShowDays(!showDays)}
-                      className='bg-[#EFF1F3] border-2 border-[#D0D5DD] px-3 py-2 rounded-md text-sm flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-[#1983D5] focus:border-transparent'
+                      className='rounded-[6px] px-3 py-2 border-[#D0D5DD] border-2 text-sm flex items-center gap-1'
                     >
                       Days
                       {showDays ? <FiChevronUp className='text-xs' /> : <FiChevronDown className='text-xs' />}
@@ -380,11 +377,11 @@ const FirmInfo = () => {
             </div>
 
             {/* Next Button */}
-            <div className='flex justify-center sm:justify-end pt-6'>
+            <div className="flex justify-center">
               <button 
                 type='submit'
                 disabled={loading}
-                className='w-full sm:w-auto bg-[#1983D5] text-white px-6 sm:px-8 py-3 rounded-[40px] text-[16px] font-medium hover:bg-[#156bb2] transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+                className="w-full sm:w-auto bg-[#1983D5] text-white px-8 py-4 font-medium hover:bg-[#156bb2] transition-all duration-200 text-[14px] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 rounded-[6px]"
               >
                 {loading ? 'Saving...' : 'Next'}
               </button>
