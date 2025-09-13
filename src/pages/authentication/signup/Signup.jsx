@@ -12,7 +12,7 @@ import toast from "react-hot-toast";
 function Signup() {
     const [currentStep, setCurrentStep] = useState(1);
     const [agreed, setAgreed] = useState(false);
-     const {RegisterUser} = UseAuth()
+     const {RegisterUser, handleGoogleSignIn} = UseAuth()
     const [formData, setFormData] = useState({
         email: "",
         firstName: "",
@@ -24,6 +24,7 @@ function Signup() {
     const [touched, setTouched] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
     const validateField = (name, value) => {
         switch (name) {
@@ -136,6 +137,18 @@ function Signup() {
     };
 
     const togglePasswordVisibility = () => setShowPassword((prev) => !prev);
+
+    const handleGoogleSignInClick = async () => {
+        setIsGoogleLoading(true);
+        try {
+            await handleGoogleSignIn();
+        } catch (error) {
+            toast.error('Failed to sign up with Google');
+            console.log('Google sign-up error:', error);
+        } finally {
+            setIsGoogleLoading(false);
+        }
+    };
 
     const passwordChecks = {
         number: /\d/.test(formData.password),
@@ -372,14 +385,22 @@ function Signup() {
                                 {/* Google Button */}
                                 <button
                                     type="button"
-                                    className="w-full flex items-center justify-center gap-3 border border-gray-300 py-2.5 sm:py-3 rounded-lg hover:bg-gray-50 transition"
+                                    onClick={handleGoogleSignInClick}
+                                    disabled={isGoogleLoading}
+                                    className="w-full flex items-center justify-center gap-3 border border-gray-300 py-2.5 sm:py-3 rounded-lg hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    <img
-                                        src="https://www.svgrepo.com/show/475656/google-color.svg"
-                                        alt="Google"
-                                        className="w-4 sm:w-5 h-4 sm:h-5"
-                                    />
-                                    <span className="text-gray-700 font-medium text-sm sm:text-base">Google</span>
+                                    {isGoogleLoading ? (
+                                        <div className="spinner border-gray-600"></div>
+                                    ) : (
+                                        <>
+                                            <img
+                                                src="https://www.svgrepo.com/show/475656/google-color.svg"
+                                                alt="Google"
+                                                className="w-4 sm:w-5 h-4 sm:h-5"
+                                            />
+                                            <span className="text-gray-700 font-medium text-sm sm:text-base">Continue with Google</span>
+                                        </>
+                                    )}
                                 </button>
                             </form>
 

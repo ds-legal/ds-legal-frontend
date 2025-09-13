@@ -77,8 +77,12 @@ export const DashboardProvider = ({ children }) => {
   useEffect(() => {
     const handleUserUpdate = () => {
       const token = localStorage.getItem('token');
-      if (token && !isInitialized) {
-        // User just logged in, fetch dashboard data
+      if (token) {
+        // User just logged in or updated, clear cache and fetch fresh dashboard data
+        console.log('User updated event received, clearing cache and fetching dashboard data...');
+        localStorage.removeItem('dashboard_cache');
+        localStorage.removeItem('dashboard_cache_timestamp');
+        setDashboardData(null);
         fetchDashboardData(true);
       }
     };
@@ -89,7 +93,7 @@ export const DashboardProvider = ({ children }) => {
     return () => {
       window.removeEventListener('userUpdated', handleUserUpdate);
     };
-  }, [isInitialized]);
+  }, []);
 
   // Listen for logout events to clear cache
   useEffect(() => {

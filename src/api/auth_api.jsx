@@ -182,4 +182,95 @@ export const UserLogOut = async () => {
          }
       };
 
+      // Google OAuth API functions
+      export const initiateGoogleOAuth = async () => {
+         try {
+            console.log('Initiating Google OAuth via backend...');
+            const response = await fetch(`${Base_url}/api/v1/auth/google/initiate`, {
+               method: 'GET',
+               headers: {
+                  'Content-Type': 'application/json',
+               },
+            });
+            
+            console.log('OAuth initiation response status:', response.status);
+            
+            if (!response.ok) {
+               const errorText = await response.text();
+               console.error('OAuth initiation failed:', errorText);
+               throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            console.log('OAuth initiation response:', data);
+            return data;
+         } catch (error) {
+            console.log('Failed to initiate Google OAuth', error);
+            throw error;
+         }
+      };
+
+      export const handleGoogleCallback = async (code, state) => {
+         try {
+            console.log('Making Google OAuth callback request...');
+            console.log('Code:', code);
+            console.log('State:', state);
+            console.log('URL:', `${Base_url}/api/v1/auth/google/callback?code=${code}&state=${state}`);
+            
+            const response = await fetch(`${Base_url}/api/v1/auth/google/callback?code=${code}&state=${state}`, {
+               method: 'GET',
+               headers: {
+                  'Content-Type': 'application/json',
+               },
+            });
+            
+            console.log('Response status:', response.status);
+            console.log('Response ok:', response.ok);
+            
+            if (!response.ok) {
+               // Try to get error details from response
+               let errorMessage = `HTTP error! status: ${response.status}`;
+               try {
+                  const errorData = await response.json();
+                  console.log('Error response data:', errorData);
+                  errorMessage = errorData.detail || errorData.message || errorMessage;
+               } catch (e) {
+                  console.log('Could not parse error response as JSON');
+               }
+               throw new Error(errorMessage);
+            }
+            
+            const data = await response.json();
+            console.log('Success response data:', data);
+            return data;
+         } catch (error) {
+            console.log('Failed to handle Google OAuth callback', error);
+            throw error;
+         }
+      };
+
+      export const googleSignInWithToken = async (idToken) => {
+         try {
+            const response = await fetch(`${Base_url}/api/v1/auth/google`, {
+               method: 'POST',
+               headers: {
+                  'Content-Type': 'application/json',
+               },
+               body: JSON.stringify({
+                  id_token: idToken
+               }),
+            });
+            
+            if (!response.ok) {
+               throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            return data;
+         } catch (error) {
+            console.log('Failed to sign in with Google token', error);
+            throw error;
+         }
+      };
+
   

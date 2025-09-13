@@ -33,6 +33,7 @@ import InvoicePreview from "../pages/InvoicePreview";
 import VerifyMail from "../pages/authentication/VerifyEmail/VerifyEmail";
 import ApproveMail from "../pages/authentication/VerifyEmail/ApproveEmail";
 import EditTasks from "../pages/EditTask";
+import GoogleCallback from "../pages/authentication/GoogleCallback";
 
 function AppRoutes() {
   const location = useLocation();
@@ -54,7 +55,8 @@ function AppRoutes() {
     "/createInvoice", 
     "/auth/verify/forget-password",
     "/verifyEmail",
-    "/editTask"
+    "/editTask",
+    "/auth/google/callback"
   ].includes(location.pathname) || 
   location.pathname.startsWith('/editAppointment/') ||
   location.pathname.startsWith('/editTask/');
@@ -199,6 +201,7 @@ function AppRoutes() {
               <Route path="/password" element={<PasswordRecovery />} />
               <Route path="/auth/verify/forget-password" element={<CreatePassword />} />
               <Route path="/signup" element={<Signup />} />
+              <Route path="/auth/google/callback" element={<GoogleCallback />} />
             </Routes>
           </div>
         </div>
