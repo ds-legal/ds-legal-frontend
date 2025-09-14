@@ -70,69 +70,73 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="w-full max-w-sm sm:max-w-md px-2 sm:px-4 lg:px-0">
+    <div className="w-full bg-white rounded-lg shadow-lg p-6 sm:p-8 lg:p-10">
       {/* Logo */}
-      <div className="mb-6 sm:mb-8 auth-logo">
+      <div className="mb-8 sm:mb-10 auth-logo">
         <LogoColor />
       </div>
       
       {/* Heading */}
-      <h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-gray-900 mb-2">
-        Login to continue your legal journey.
+      <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-gray-900 mb-3">
+        Welcome Back
       </h1>
       
+      <p className="text-lg sm:text-xl text-gray-600 mb-8 sm:mb-10">
+        Login to continue your legal journey
+      </p>
+      
       {/* Sign up link */}
-      <p className="text-sm sm:text-base text-gray-600 mb-6 sm:mb-8">
+      <p className="text-base sm:text-lg text-gray-600 mb-8 sm:mb-10">
         Don't have an account?{" "}
-        <Link className="text-blue-600 hover:underline" to="/signup">Sign Up</Link>
+        <Link className="text-blue-600 hover:underline font-medium" to="/signup">Sign Up</Link>
       </p>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 sm:space-y-8">
         {/* Email Field */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+          <label className="block text-base font-medium text-gray-700 mb-3">Email Address</label>
           <input
             type="email"
             name="email"
             autoComplete="email"
             {...register("email")}
-            placeholder="emai@dslegal.com"
-            className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base ${
+            placeholder="email@dslegal.com"
+            className={`w-full px-4 sm:px-5 py-4 sm:py-5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-base sm:text-lg ${
               errors.email || Error ? "border-red-500" : "border-gray-300"
             }`}
           />
           {errors.email && (
-            <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.email.message}</p>
+            <p className="text-red-500 text-sm sm:text-base mt-2">{errors.email.message}</p>
           )}
           {Error && (
-            <p className="text-red-500 text-xs sm:text-sm mt-1">{errorMessage}</p>
+            <p className="text-red-500 text-sm sm:text-base mt-2">{errorMessage}</p>
           )}
         </div>
 
         {/* Password Field */}
         <div className="relative">
-          <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
+          <label className="block text-base font-medium text-gray-700 mb-3">Password</label>
           <input
             type={showPassword ? "text" : "password"}
             name="password"
             autoComplete="current-password"
             {...register("password")}
             placeholder="********"
-            className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 pr-12 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base ${
+            className={`w-full px-4 sm:px-5 py-4 sm:py-5 pr-14 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-base sm:text-lg ${
               errors.password || Error ? "border-red-500" : "border-gray-300"
             }`}
           />
           <span
-            className="absolute right-3 top-[42px] cursor-pointer text-gray-500"
+            className="absolute right-4 top-[52px] cursor-pointer text-gray-500"
             onClick={() => setShowPassword(!showPassword)}
           >
-            {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+            {showPassword ? <FiEyeOff size={24} /> : <FiEye size={24} />}
           </span>
           {errors.password && (
-            <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.password.message}</p>
+            <p className="text-red-500 text-sm sm:text-base mt-2">{errors.password.message}</p>
           )}
           {Error && (
-            <p className="text-red-500 text-xs sm:text-sm mt-1">{errorMessage}</p>
+            <p className="text-red-500 text-sm sm:text-base mt-2">{errorMessage}</p>
           )}
         </div>
 
@@ -140,7 +144,7 @@ const LoginForm = () => {
         <button
           disabled={isLoading}
           type="submit"
-          className="w-full bg-blue-600 text-white py-2.5 sm:py-3 rounded-lg font-semibold hover:bg-blue-700 transition disabled:opacity-50 text-sm sm:text-base"
+          className="w-full bg-blue-600 text-white py-4 sm:py-5 rounded-lg font-semibold hover:bg-blue-700 transition disabled:opacity-50 text-base sm:text-lg"
         >
           {isLoading ? (
             <div className="spinner border-white"></div>
@@ -151,15 +155,15 @@ const LoginForm = () => {
       </form>
 
       {/* Forgot Password */}
-      <div className="text-center mt-4 sm:mt-6">
-        <span className="text-xs sm:text-sm text-gray-600">Forgot Password? </span>
-        <Link to="/password" className="text-blue-600 hover:underline text-xs sm:text-sm">Reset</Link>
+      <div className="text-center mt-6 sm:mt-8">
+        <span className="text-sm sm:text-base text-gray-600">Forgot Password? </span>
+        <Link to="/password" className="text-blue-600 hover:underline text-sm sm:text-base font-medium">Reset</Link>
       </div>
 
       {/* Divider */}
-      <div className="flex items-center my-4 sm:my-6">
+      <div className="flex items-center my-6 sm:my-8">
         <div className="flex-grow h-px bg-gray-300" />
-        <span className="px-3 sm:px-4 text-gray-500 text-xs sm:text-sm">Or</span>
+        <span className="px-4 sm:px-6 text-gray-500 text-sm sm:text-base">Or</span>
         <div className="flex-grow h-px bg-gray-300" />
       </div>
 
@@ -168,7 +172,7 @@ const LoginForm = () => {
         type="button"
         onClick={handleGoogleSignInClick}
         disabled={isGoogleLoading}
-        className="w-full flex items-center justify-center gap-3 border border-gray-300 py-2.5 sm:py-3 rounded-lg hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full flex items-center justify-center gap-4 border border-gray-300 py-4 sm:py-5 rounded-lg hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isGoogleLoading ? (
           <div className="spinner border-gray-600"></div>
@@ -177,15 +181,15 @@ const LoginForm = () => {
             <img
               src="https://www.svgrepo.com/show/475656/google-color.svg"
               alt="Google"
-              className="w-4 sm:w-5 h-4 sm:h-5"
+              className="w-5 sm:w-6 h-5 sm:h-6"
             />
-            <span className="text-gray-700 font-medium text-sm sm:text-base">Continue with Google</span>
+            <span className="text-gray-700 font-medium text-base sm:text-lg">Continue with Google</span>
           </>
         )}
       </button>
 
       {/* Footer Links */}
-      <div className="flex justify-center gap-4 sm:gap-6 mt-6 sm:mt-8 text-xs sm:text-sm text-gray-500">
+      <div className="flex justify-center gap-6 sm:gap-8 mt-8 sm:mt-10 text-sm sm:text-base text-gray-500">
         <a href="#" className="hover:underline">Help</a>
         <a href="#" className="hover:underline">Privacy</a>
         <a href="#" className="hover:underline">Terms</a>

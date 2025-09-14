@@ -1,7 +1,4 @@
 import { useState, useEffect } from "react";
-import img1 from "../../../assets/authImg.jpg";
-import user from "../../../assets/loginuser.png";
-import LogoWhite from "../../../components/common/LogoWhite";
 import LogoColor from "../../../components/common/LogoColor";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { ArrowLeft, Check, X } from "lucide-react";
@@ -210,101 +207,56 @@ function Signup() {
     }, [formData.password]);
 
     return (
-        <div className="min-h-screen flex flex-col lg:flex-row">
-            {/* Left Panel - Promotional Section */}
-            <div className="hidden lg:flex lg:w-1/2 relative">
-                <img
-                    src={img1}
-                    className="w-full h-full object-cover"
-                    alt="Signup"
-                />
-                <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent"></div>
-                
-                {/* Content overlay */}
-                <div className="absolute inset-0 flex flex-col justify-between p-8 lg:p-12">
-                    {/* Logo */}
-                    <div className="mt-6 lg:mt-8">
-                        <LogoWhite />
-                    </div>
-                    
-                    {/* Main content */}
-                    <div className="flex-1 flex flex-col justify-center">
-                        <h1 className="text-white text-2xl sm:text-3xl lg:text-4xl font-semibold leading-tight mb-4 lg:mb-6">
-                            Streamline your legal practice with DS Legal
-                        </h1>
-                        <p className="text-gray-200 text-sm sm:text-base lg:text-lg opacity-95 leading-relaxed">
-                            A lightweight admin companion for legal teams — manage appointments, tasks and invoices securely and efficiently.
-                        </p>
-                    </div>
-                    
-                    {/* Testimonial / highlight */}
-                    <div className="bg-black/40 backdrop-blur-sm p-4 lg:p-6 mb-6 lg:mb-8">
-                        <p className="text-gray-200 text-sm lg:text-base mb-3 lg:mb-4">
-                            Used by attorneys to reduce admin time and keep client data organized and secure.
-                        </p>
-                        <div className="flex items-center gap-3">
-                            <img src={user} alt="user" className="h-10 w-10 lg:h-12 lg:w-12 rounded-full" />
-                            <div>
-                                <h5 className="text-white font-medium text-sm lg:text-base">Joan Doe</h5>
-                                <p className="text-gray-300 text-xs lg:text-sm">CEO, DS Legal</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    {/* Pagination dots */}
-                    <div className="flex gap-2 mb-6 lg:mb-8">
-                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                        <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                        <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                    </div>
-                </div>
-            </div>
-            
-            {/* Right Panel - Signup Form */}
-            <div className="w-full lg:w-1/2 flex items-center justify-center p-3 sm:p-4 lg:p-8">
-                <div className="w-full max-w-sm sm:max-w-md">
+        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+            {/* Full Width Signup Form */}
+            <div className="w-full max-w-md lg:max-w-lg xl:max-w-xl px-4 sm:px-6 lg:px-8">
+                <div className="w-full bg-white rounded-lg shadow-lg p-6 sm:p-8 lg:p-10">
                     {currentStep === 1 ? (
                         <>
                             {/* Logo */}
-                            <div className="mb-6 sm:mb-8 auth-logo">
+                            <div className="mb-8 sm:mb-10 auth-logo">
                                 <LogoColor />
                             </div>
                             
                             {/* Heading */}
-                            <h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-gray-900 mb-2">
+                            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-gray-900 mb-3">
                                 Create Account
                             </h1>
                             
+                            <p className="text-lg sm:text-xl text-gray-600 mb-8 sm:mb-10">
+                                Join DS Legal and streamline your legal practice
+                            </p>
+                            
                             {/* Sign in link */}
-                            <p className="text-sm sm:text-base text-gray-600 mb-6 sm:mb-8">
+                            <p className="text-base sm:text-lg text-gray-600 mb-8 sm:mb-10">
                                 Do you have an account already?{" "}
-                                <Link className="text-blue-600 hover:underline" to="/login">
+                                <Link className="text-blue-600 hover:underline font-medium" to="/login">
                                     Sign In
                                 </Link>
                             </p>
 
-                            <form onSubmit={handleNext} className="space-y-4 sm:space-y-6">
+                            <form onSubmit={handleNext} className="space-y-6 sm:space-y-8">
                                 {/* Email */}
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label className="block text-base font-medium text-gray-700 mb-3">
                                         Email Address
                                     </label>
                                     <input
                                         type="email"
                                         name="email"
                                         autoComplete="email"
-                                        placeholder="Jonsnow@gmail.com"
+                                        placeholder="email@dslegal.com"
                                         value={formData.email}
                                         onChange={handleChange}
                                         onBlur={handleBlur}
-                                        className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base ${
+                                        className={`w-full px-4 sm:px-5 py-4 sm:py-5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-base sm:text-lg ${
                                             errors.email
                                                 ? "border-red-500"
                                                 : "border-gray-300"
                                         }`}
                                     />
                                     {errors.email && touched.email && (
-                                        <p className="text-red-500 text-xs sm:text-sm mt-1">
+                                        <p className="text-red-500 text-sm sm:text-base mt-2">
                                             {errors.email}
                                         </p>
                                     )}
@@ -312,25 +264,25 @@ function Signup() {
                                 
                                 {/* First Name */}
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label className="block text-base font-medium text-gray-700 mb-3">
                                         First name
                                     </label>
                                     <input
                                         type="text"
                                         name="firstName"
                                         autoComplete="given-name"
-                                        placeholder="Jon"
+                                        placeholder="John"
                                         value={formData.firstName}
                                         onChange={handleChange}
                                         onBlur={handleBlur}
-                                        className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base ${
+                                        className={`w-full px-4 sm:px-5 py-4 sm:py-5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-base sm:text-lg ${
                                             errors.firstName
                                                 ? "border-red-500"
                                                 : "border-gray-300"
                                         }`}
                                     />
                                     {errors.firstName && touched.firstName && (
-                                        <p className="text-red-500 text-xs sm:text-sm mt-1">
+                                        <p className="text-red-500 text-sm sm:text-base mt-2">
                                             {errors.firstName}
                                         </p>
                                     )}
@@ -338,25 +290,25 @@ function Signup() {
                                 
                                 {/* Last Name */}
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label className="block text-base font-medium text-gray-700 mb-3">
                                         Last Name
                                     </label>
                                     <input
                                         type="text"
                                         name="lastName"
                                         autoComplete="family-name"
-                                        placeholder="Snow"
+                                        placeholder="Doe"
                                         value={formData.lastName}
                                         onChange={handleChange}
                                         onBlur={handleBlur}
-                                        className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base ${
+                                        className={`w-full px-4 sm:px-5 py-4 sm:py-5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-base sm:text-lg ${
                                             errors.lastName
                                                 ? "border-red-500"
                                                 : "border-gray-300"
                                         }`}
                                     />
                                     {errors.lastName && touched.lastName && (
-                                        <p className="text-red-500 text-xs sm:text-sm mt-1">
+                                        <p className="text-red-500 text-sm sm:text-base mt-2">
                                             {errors.lastName}
                                         </p>
                                     )}
@@ -366,7 +318,7 @@ function Signup() {
                                 <button
                                     type="submit"
                                     disabled={isSubmitting || !isStep1Valid()}
-                                    className="w-full bg-blue-600 text-white py-2.5 sm:py-3 rounded-lg font-semibold hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+                                    className="w-full bg-blue-600 text-white py-4 sm:py-5 rounded-lg font-semibold hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed text-base sm:text-lg"
                                 >
                                     {isSubmitting ? (
                                         <div className="spinner border-white"></div>
@@ -376,9 +328,9 @@ function Signup() {
                                 </button>
 
                                 {/* Divider */}
-                                <div className="flex items-center my-4 sm:my-6">
+                                <div className="flex items-center my-6 sm:my-8">
                                     <div className="flex-grow h-px bg-gray-300" />
-                                    <span className="px-3 sm:px-4 text-gray-500 text-xs sm:text-sm">Or</span>
+                                    <span className="px-4 sm:px-6 text-gray-500 text-sm sm:text-base">Or</span>
                                     <div className="flex-grow h-px bg-gray-300" />
                                 </div>
 
@@ -387,7 +339,7 @@ function Signup() {
                                     type="button"
                                     onClick={handleGoogleSignInClick}
                                     disabled={isGoogleLoading}
-                                    className="w-full flex items-center justify-center gap-3 border border-gray-300 py-2.5 sm:py-3 rounded-lg hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="w-full flex items-center justify-center gap-4 border border-gray-300 py-4 sm:py-5 rounded-lg hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {isGoogleLoading ? (
                                         <div className="spinner border-gray-600"></div>
@@ -396,16 +348,16 @@ function Signup() {
                                             <img
                                                 src="https://www.svgrepo.com/show/475656/google-color.svg"
                                                 alt="Google"
-                                                className="w-4 sm:w-5 h-4 sm:h-5"
+                                                className="w-5 sm:w-6 h-5 sm:h-6"
                                             />
-                                            <span className="text-gray-700 font-medium text-sm sm:text-base">Continue with Google</span>
+                                            <span className="text-gray-700 font-medium text-base sm:text-lg">Continue with Google</span>
                                         </>
                                     )}
                                 </button>
                             </form>
 
                             {/* Footer Links */}
-                            <div className="flex justify-center gap-4 sm:gap-6 mt-6 sm:mt-8 text-xs sm:text-sm text-gray-500">
+                            <div className="flex justify-center gap-6 sm:gap-8 mt-8 sm:mt-10 text-sm sm:text-base text-gray-500">
                                 <a href="#" className="hover:underline">Help</a>
                                 <a href="#" className="hover:underline">Privacy</a>
                                 <a href="#" className="hover:underline">Terms</a>
@@ -415,26 +367,30 @@ function Signup() {
                         <div className="w-full">
                             <button
                                 onClick={handleBack}
-                                className="text-gray-500 hover:text-blue-500 mb-4 sm:mb-6 flex items-center gap-2 text-sm sm:text-base"
+                                className="text-gray-500 hover:text-blue-500 mb-6 sm:mb-8 flex items-center gap-2 text-base sm:text-lg"
                             >
-                                <ArrowLeft size={18} /> Back
+                                <ArrowLeft size={20} /> Back
                             </button>
                             
-                            <h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-gray-900 mb-2">
-                                Create password
+                            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-gray-900 mb-3">
+                                Create Password
                             </h1>
                             
-                            <p className="text-sm sm:text-base text-gray-600 mb-6 sm:mb-8">
+                            <p className="text-lg sm:text-xl text-gray-600 mb-8 sm:mb-10">
+                                Secure your account with a strong password
+                            </p>
+                            
+                            <p className="text-base sm:text-lg text-gray-600 mb-8 sm:mb-10">
                                 Do you have an account already?{" "}
-                                <Link className="text-blue-600 hover:underline" to="/login">
+                                <Link className="text-blue-600 hover:underline font-medium" to="/login">
                                     Sign In
                                 </Link>
                             </p>
                             
-                            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+                            <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
                                 {/* Password Field */}
                                 <div className="relative">
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label className="block text-base font-medium text-gray-700 mb-3">
                                         Password
                                     </label>
                                     <input
@@ -445,28 +401,28 @@ function Signup() {
                                         value={formData.password}
                                         onChange={handleChange}
                                         onBlur={handleBlur}
-                                        className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 pr-12 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base ${
+                                        className={`w-full px-4 sm:px-5 py-4 sm:py-5 pr-14 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-base sm:text-lg ${
                                             errors.password
                                                 ? "border-red-500"
                                                 : "border-gray-300"
                                         }`}
                                     />
                                     <span
-                                        className="absolute right-3 top-[42px] cursor-pointer text-gray-500"
+                                        className="absolute right-4 top-[52px] cursor-pointer text-gray-500"
                                         onClick={togglePasswordVisibility}
                                     >
-                                        {showPassword ? <FiEyeOff size={20} /> : <FiEye size={18} />}
+                                        {showPassword ? <FiEyeOff size={24} /> : <FiEye size={24} />}
                                     </span>
                                     {errors.password && (
-                                        <p className="text-red-500 text-xs sm:text-sm mt-1">
+                                        <p className="text-red-500 text-sm sm:text-base mt-2">
                                             {errors.password}
                                         </p>
                                     )}
                                 </div>
 
                                 {/* Password Strength */}
-                                <div className="mt-4">
-                                    <div className="flex items-center gap-2 text-xs sm:text-sm mb-2">
+                                <div className="mt-6">
+                                    <div className="flex items-center gap-2 text-sm sm:text-base mb-3">
                                         <span>Strength:</span>
                                         <span className={`font-medium ${passwordStrength.textColor}`}>
                                             {passwordStrength.message}
@@ -474,21 +430,21 @@ function Signup() {
                                     </div>
 
                                     {formData.password && (
-                                        <ul className="text-xs sm:text-sm text-gray-600 space-y-1">
-                                            <li className={`flex items-center gap-2 ${passwordChecks.number ? 'text-green-600' : ''}`}>
-                                                {passwordChecks.number ? <Check size={12} /> : <X size={12} />}
-                                                <span>one number</span>
+                                        <ul className="text-sm sm:text-base text-gray-600 space-y-2">
+                                            <li className={`flex items-center gap-3 ${passwordChecks.number ? 'text-green-600' : ''}`}>
+                                                {passwordChecks.number ? <Check size={16} /> : <X size={16} />}
+                                                <span>One number</span>
                                             </li>
-                                            <li className={`flex items-center gap-2 ${passwordChecks.upper ? 'text-green-600' : ''}`}>
-                                                {passwordChecks.upper ? <Check size={12} /> : <X size={12} />}
-                                                <span>one uppercase letter</span>
+                                            <li className={`flex items-center gap-3 ${passwordChecks.upper ? 'text-green-600' : ''}`}>
+                                                {passwordChecks.upper ? <Check size={16} /> : <X size={16} />}
+                                                <span>One uppercase letter</span>
                                             </li>
-                                            <li className={`flex items-center gap-2 ${passwordChecks.lower ? 'text-green-600' : ''}`}>
-                                                {passwordChecks.lower ? <Check size={12} /> : <X size={12} />}
-                                                <span>one lowercase letter</span>
+                                            <li className={`flex items-center gap-3 ${passwordChecks.lower ? 'text-green-600' : ''}`}>
+                                                {passwordChecks.lower ? <Check size={16} /> : <X size={16} />}
+                                                <span>One lowercase letter</span>
                                             </li>
-                                            <li className={`flex items-center gap-2 ${passwordChecks.special ? 'text-green-600' : ''}`}>
-                                                {passwordChecks.special ? <Check size={12} /> : <X size={12} />}
+                                            <li className={`flex items-center gap-3 ${passwordChecks.special ? 'text-green-600' : ''}`}>
+                                                {passwordChecks.special ? <Check size={16} /> : <X size={16} />}
                                                 <span>A special character (!@#$%^&*)</span>
                                             </li>
                                         </ul>
@@ -496,7 +452,7 @@ function Signup() {
                                 </div>
 
                                 {/* Terms Agreement */}
-                                <div className="flex items-start space-x-3 mt-4 sm:mt-6 text-xs sm:text-sm text-gray-600">
+                                <div className="flex items-start space-x-3 mt-6 sm:mt-8 text-sm sm:text-base text-gray-600">
                                     <input
                                         type="checkbox"
                                         checked={agreed}
@@ -526,12 +482,12 @@ function Signup() {
                                 <button
                                     type="submit"
                                     disabled={isSubmitting || !agreed}
-                                    className="w-full bg-blue-600 text-white py-2.5 sm:py-3 rounded-lg font-semibold hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+                                    className="w-full bg-blue-600 text-white py-4 sm:py-5 rounded-lg font-semibold hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed text-base sm:text-lg"
                                 >
                                     {isSubmitting ? (
                                         <div className="spinner border-white"></div>
                                     ) : (
-                                        <span>Next</span>
+                                        <span>Create Account</span>
                                     )}
                                 </button>
                             </form>
