@@ -6,6 +6,7 @@ import { AuthProvider } from "./store/auth.context";
 import { TaskProvider } from "./store/task.context";
 import { AppointmentProvider } from "./store/appointment.context";
 import { DashboardProvider } from "./store/dashboard.context";
+import { NotificationsProvider } from "./store/notifications.context";
 
 createRoot(document.getElementById("root")).render(
     <StrictMode>
@@ -13,7 +14,9 @@ createRoot(document.getElementById("root")).render(
     <TaskProvider>
     <AppointmentProvider>
     <DashboardProvider>
+    <NotificationsProvider>
         <App />
+    </NotificationsProvider>
     </DashboardProvider>
     </AppointmentProvider>
     </TaskProvider> 
