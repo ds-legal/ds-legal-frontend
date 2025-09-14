@@ -18,6 +18,7 @@ const Header = () => {
     const [searchSuggestions, setSearchSuggestions] = useState([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [isSearching, setIsSearching] = useState(false);
+    const [showMobileSearch, setShowMobileSearch] = useState(false);
     const searchRef = useRef(null);
     const suggestionsRef = useRef(null);
     
@@ -70,6 +71,7 @@ const Header = () => {
             navigate(`/tasks?search=${encodeURIComponent(searchQuery)}`);
             setShowSuggestions(false);
             setSearchQuery('');
+            setShowMobileSearch(false);
         }
     };
     
@@ -77,6 +79,7 @@ const Header = () => {
         setSearchQuery(suggestion.title);
         navigate(`/tasks?search=${encodeURIComponent(suggestion.title)}`);
         setShowSuggestions(false);
+        setShowMobileSearch(false);
     };
     
     // Notification functions
@@ -167,11 +170,16 @@ const Header = () => {
             if (notificationsRef.current && !notificationsRef.current.contains(event.target)) {
                 setShowNotifications(false);
             }
+            
+            // Close mobile search if clicking outside
+            if (showMobileSearch && !event.target.closest('.mobile-search-container')) {
+                setShowMobileSearch(false);
+            }
         };
         
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
+    }, [showMobileSearch]);
     
     // Use dashboard user data if available, fallback to auth user, then stored user
     const currentUser = dashboardUser || authUser || storedUser;
@@ -225,8 +233,58 @@ const Header = () => {
             <div className="flex items-center space-x-2 sm:space-x-4">
                 {/* Search */}
                 <div className="flex items-center">
-                    {/* Mobile icon */}
-                    <Search className="block sm:hidden h-6 w-6 text-[#798394]" />
+                    {/* Mobile Search Button */}
+                    <button 
+                        onClick={() => setShowMobileSearch(!showMobileSearch)}
+                        className="block sm:hidden p-2 rounded-full hover:bg-gray-100"
+                    >
+                        <Search className="h-5 w-5 text-[#798394]" />
+                    </button>
+                    
+                    {/* Mobile Search Input */}
+                    {showMobileSearch && (
+                        <div className="mobile-search-container absolute top-full left-0 right-0 bg-white border-b border-gray-200 p-4 z-50 sm:hidden">
+                            <form onSubmit={handleSearchSubmit} className="relative">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#798394]" />
+                                <input
+                                    type="text"
+                                    placeholder="Search tasks..."
+                                    value={searchQuery}
+                                    onChange={handleSearchChange}
+                                    className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#798394] focus:border-transparent text-sm"
+                                    autoFocus
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowMobileSearch(false)}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2"
+                                >
+                                    <X className="h-4 w-4 text-gray-500" />
+                                </button>
+                            </form>
+                            
+                            {/* Mobile Search Suggestions */}
+                            {showSuggestions && searchSuggestions.length > 0 && (
+                                <div className="mt-2 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                                    {searchSuggestions.map((suggestion) => (
+                                        <div
+                                            key={suggestion.id}
+                                            onClick={() => handleSuggestionClick(suggestion)}
+                                            className="px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+                                        >
+                                            <div className="font-medium text-sm text-gray-900">
+                                                {suggestion.title}
+                                            </div>
+                                            <div className="text-xs text-gray-500 capitalize">
+                                                Status: {suggestion.status}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    )}
+                    
                     {/* Desktop input */}
                     <div className="hidden sm:block relative" ref={searchRef}>
                         <form onSubmit={handleSearchSubmit}>
@@ -289,12 +347,16 @@ const Header = () => {
                     
                     {/* Notifications Dropdown */}
                     {showNotifications && (
-                        <div className="absolute top-full right-0 mt-2 w-80 bg-white border border-gray-300 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
-                            <div className="p-4 border-b border-gray-200">
-                                <h3 className="font-semibold text-gray-900">Notifications</h3>
-                                {unreadCount > 0 && (
-                                    <p className="text-sm text-gray-500">{unreadCount} unread</p>
-                                )}
+                        <div className="fixed top-16 left-1/2 transform -translate-x-1/2 w-[calc(100vw-2rem)] max-w-sm sm:absolute sm:top-full sm:right-0 sm:left-auto sm:transform-none sm:w-80 bg-white border border-gray-300 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto mt-2">
+                            <div className="p-3 sm:p-4 border-b border-gray-200">
+                                <div className="flex items-center justify-between">
+                                    <h3 className="font-semibold text-gray-900 text-sm sm:text-base">Notifications</h3>
+                                    {unreadCount > 0 && (
+                                        <span className="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">
+                                            {unreadCount} unread
+                                        </span>
+                                    )}
+                                </div>
                             </div>
                             
                             {isLoadingNotifications ? (
@@ -307,16 +369,16 @@ const Header = () => {
                                         <div
                                             key={notification.id}
                                             onClick={() => handleNotificationClick(notification)}
-                                            className={`p-4 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0 ${
+                                            className={`p-3 sm:p-4 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0 ${
                                                 notification.status === 'unread' ? 'bg-blue-50' : ''
                                             }`}
                                         >
                                             <div className="flex items-start justify-between">
-                                                <div className="flex-1">
-                                                    <div className="font-medium text-sm text-gray-900">
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="font-medium text-xs sm:text-sm text-gray-900 truncate">
                                                         {notification.title}
                                                     </div>
-                                                    <div className="text-xs text-gray-600 mt-1">
+                                                    <div className="text-xs text-gray-600 mt-1 line-clamp-2">
                                                         {notification.message}
                                                     </div>
                                                     <div className="text-xs text-gray-500 mt-2">
@@ -324,7 +386,7 @@ const Header = () => {
                                                     </div>
                                                 </div>
                                                 {notification.status === 'unread' && (
-                                                    <div className="w-2 h-2 bg-blue-500 rounded-full mt-1"></div>
+                                                    <div className="w-2 h-2 bg-blue-500 rounded-full mt-1 flex-shrink-0 ml-2"></div>
                                                 )}
                                             </div>
                                         </div>
@@ -332,8 +394,8 @@ const Header = () => {
                                 </div>
                             ) : (
                                 <div className="p-4 text-center text-gray-500">
-                                    <Bell className="h-8 w-8 mx-auto mb-2 text-gray-300" />
-                                    <p className="text-sm">No notifications</p>
+                                    <Bell className="h-6 w-6 sm:h-8 sm:w-8 mx-auto mb-2 text-gray-300" />
+                                    <p className="text-xs sm:text-sm">No notifications</p>
                                 </div>
                             )}
                         </div>
