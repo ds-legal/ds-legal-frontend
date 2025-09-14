@@ -1,12 +1,10 @@
 import logo from "../../assets/logo-white.png";
+
 export default function LogoWhite() {
     return (
         <>
-            <div className="flex space-x-2 items-center">
-                <img src={logo} alt="logo" />
-                <h1 className="w-32 h-8 font-bold text-3xl leading-none text-white">
-                    Ds Legal
-                </h1>
+            <div className="flex items-center gap-2">
+                <img src={logo} alt="DS Legal" className="h-10 sm:h-12 md:h-14 lg:h-16 w-auto" />
             </div>
         </>
     );

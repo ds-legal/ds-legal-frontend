@@ -1,86 +1,224 @@
 import {
-    BrowserRouter as Router,
-    Routes,
-    Route,
-    useLocation,
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+  useNavigate,
 } from "react-router-dom";
 import Sidebar from "../components/ui/Sidebar";
 import Header from "../components/ui/Header";
-import { lazy, Suspense } from "react";
-import LoadingSpinner from "../components/common/LoadingSpinner";
+import { useLayoutEffect, useState } from "react";
+import PasswordRecovery from "../pages/authentication/recoverPassword/PasswordRecovery";
+import CreatePassword from "../pages/authentication/createPassord/CreatePassword";
+import toast, { Toaster } from "react-hot-toast";
+import ProctedRoute from "./ProctedRoute";
+import CreateTasks from "../pages/CreateTasks";
+import CreateAppointment from "../pages/CreateAppointment";
+import EditAppointment from "../pages/EditAppointment";
 
-// Lazy load page components
-const Dashboard = lazy(() => import("../pages/Dashboard"));
-const Appointment = lazy(() => import("../pages/Appointments"));
-const Invoice = lazy(() => import("../pages/Invoice"));
-const Settings = lazy(() => import("../pages/Settings"));
-const Task = lazy(() => import("../pages/Tasks"));
-const Note = lazy(() => import("../pages/Notes"));
-const Login = lazy(() => import("../pages/authentication/login/Login"));
-const Signup = lazy(() => import("../pages/authentication/signup/Signup"));
+// Direct imports instead of lazy loading
+import Dashboard from "../pages/Dashboard";
+import Appointment from "../pages/Appointments";
+import Invoice from "../pages/Invoice";
+import Settings from "../pages/Settings";
+import Task from "../pages/Tasks";
+import Note from "../pages/Notes";
+import Login from "../pages/authentication/login/Login";
+import Signup from "../pages/authentication/signup/Signup";
+import FirmInfo from "../pages/InvoiceScreens/FirmInfo";
+import Receipts from "../pages/InvoiceScreens/Receipts";
+import QuickInvoice from "../pages/InvoiceScreens/QuickInvoice";
+import CreateInvoice from "../pages/CreateInvoice";
+import InvoicePreview from "../pages/InvoicePreview";
+import VerifyMail from "../pages/authentication/VerifyEmail/VerifyEmail";
+import ApproveMail from "../pages/authentication/VerifyEmail/ApproveEmail";
+import EditTasks from "../pages/EditTask";
+import GoogleCallback from "../pages/authentication/GoogleCallback";
 
-// AppRoutes
 function AppRoutes() {
-    const location = useLocation();
-    const hideSidebar = ["/signup", "/login"].includes(location.pathname);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [initialized, setInitialized] = useState(false);
 
-    return (
-        <div className="flex flex-col min-h-screen">
-            {/* Combined header + content area */}
-            <div className="flex flex-1 overflow-hidden">
-                {/* Sidebar - sticky at top left */}
-                {!hideSidebar && (
-                    <div className="sticky top-0 h-screen">
-                        <Sidebar />
-                    </div>
-                )}
+  const hideSidebar = [
+    "/signup",
+    "/login",
+    "/auth/verify/verify-email",
+    "/",
+    "/password",
+    "/createPassword",
+    "/createTask",
+    "/createAppointment",
+    "/firmInfo",
+    "/receipts",
+    "/quickInvoice",
+    "/createInvoice", 
+    "/auth/verify/forget-password",
+    "/verifyEmail",
+    "/editTask",
+    "/auth/google/callback"
+  ].includes(location.pathname) || 
+  location.pathname.startsWith('/editAppointment/') ||
+  location.pathname.startsWith('/editTask/');
 
-                {/* Right side (header + content) */}
-                <div
-                    className={`flex-1 flex flex-col ${
-                        !hideSidebar ? "sm:pl-0" : ""
-                    }`}
-                >
-                    {/* Header - sticky at top */}
-                    {!hideSidebar && <Header />}
+  useLayoutEffect(() => {
+    const firstLoad = sessionStorage.getItem("firstLoad") === null;
+    if (firstLoad) {
+      sessionStorage.setItem("firstLoad", "false");
+      navigate("/login", { replace: true });
+    }
+    setInitialized(true);
+  }, [navigate]);
 
-                    {/* Scrollable content area */}
-                    <div className="flex-1 overflow-auto">
-                        <Suspense
-                            fallback={
-                                <LoadingSpinner size="lg" color="primary" />
-                            }
-                        >
-                            <Routes>
-                                <Route path="/" element={<Dashboard />} />
-                                <Route path="/invoices" element={<Invoice />} />
-                                <Route path="/tasks" element={<Task />} />
-                                <Route
-                                    path="/appointments"
-                                    element={<Appointment />}
-                                />
-                                <Route path="/notes" element={<Note />} />
-                                <Route
-                                    path="/settings"
-                                    element={<Settings />}
-                                />
-                                <Route path="/login" element={<Login />} />
-                                <Route path="/signup" element={<Signup />} />
-                            </Routes>
-                        </Suspense>
-                    </div>
-                </div>
-            </div>
+  if (!initialized) return null;
+
+  return (
+    <div className="flex flex-col lg:h-screen min-h-screen">
+      <div className="flex flex-1 overflow-hidden">
+        {!hideSidebar && (
+          <div className="sticky top-0 h-screen z-50">
+            <Sidebar />
+          </div>
+        )}
+
+        <div className={`flex-1 flex flex-col ${!hideSidebar ? "sm:pl-0" : ""}`}>
+          {!hideSidebar && <Header />}
+
+          <div className="flex-1 overflow-auto">
+            <Routes>
+              <Route path="/" element={<Login />} />
+              <Route
+                path="/dashboard"
+                element={
+                  <ProctedRoute>
+                    <Dashboard />
+                  </ProctedRoute>
+                }
+              />
+              <Route
+                path="/invoices"
+                element={
+                  <ProctedRoute>
+                    <Invoice />
+                  </ProctedRoute>
+                }
+              />
+              <Route
+                path="/tasks"
+                element={
+                  <ProctedRoute>
+                    <Task />
+                  </ProctedRoute>
+                }
+              />
+              <Route
+                path="/appointments"
+                element={
+                  <ProctedRoute>
+                    <Appointment />
+                  </ProctedRoute>
+                }
+              />
+              <Route
+                path="/notes"
+                element={
+                  <ProctedRoute>
+                    <Note />
+                  </ProctedRoute>
+                }
+              />
+              <Route
+                path="/settings"
+                element={
+                  <ProctedRoute>
+                    <Settings />
+                  </ProctedRoute>
+                }
+              />
+               <Route
+                path="/firmInfo"
+                element={
+                  <ProctedRoute>
+                    <FirmInfo/>
+                  </ProctedRoute>
+                }
+              />
+                <Route
+                path="/receipts"
+                element={
+                  <ProctedRoute>
+                   <Receipts/>
+                  </ProctedRoute>
+                }
+              />
+                <Route
+                path="/quickInvoice"
+                element={
+                  <ProctedRoute>
+                   <QuickInvoice/>
+                  </ProctedRoute>
+                }
+              />
+              <Route
+                path="/createInvoice"
+                element={
+                  <ProctedRoute>
+                   <CreateInvoice/>
+                  </ProctedRoute>
+                }
+              />
+              <Route
+                path="/invoice-preview/:id"
+                element={
+                  <ProctedRoute>
+                   <InvoicePreview/>
+                  </ProctedRoute>
+                }
+              />
+               <Route
+                path="/editTask/:id"
+                element={
+                  <ProctedRoute>
+                  <EditTasks/>
+                  </ProctedRoute>
+                }
+              />
+              <Route
+                path="/editAppointment/:id"
+                element={
+                  <ProctedRoute>
+                  <EditAppointment/>
+                  </ProctedRoute>
+                }
+              />
+              
+              
+              <Route path="/login" element={<Login />} />
+              <Route path="/verifyEmail" element={<VerifyMail />} />
+              <Route path="/auth/verify/verify-email" element={<ApproveMail />} />
+              <Route path="/createTask" element={<CreateTasks />} />
+              <Route path="/createAppointment" element={<CreateAppointment />} />
+              <Route path="/password" element={<PasswordRecovery />} />
+              <Route path="/auth/verify/forget-password" element={<CreatePassword />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/auth/google/callback" element={<GoogleCallback />} />
+            </Routes>
+          </div>
         </div>
-    );
+      </div>
+    </div>
+  );
 }
 
 function App() {
-    return (
-        <Router>
-            <AppRoutes />
-        </Router>
-    );
+  return (
+    <div className="w-full overflow-x-hidden">
+      <Router>
+        <AppRoutes />
+      </Router>
+      <Toaster />
+    </div>
+  );
 }
 
 export default App;

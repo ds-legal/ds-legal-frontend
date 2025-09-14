@@ -1,23 +1,27 @@
 import { useState, useEffect } from "react";
-import img1 from "../../../assets/authImg.jpg";
-import LogoWhite from "../../../components/common/LogoWhite";
-import logo from "../../../assets/logo-color.png";
-import { Eye, EyeOff, ArrowLeft, Check, X } from "lucide-react";
+import LogoColor from "../../../components/common/LogoColor";
+import { FiEye, FiEyeOff } from "react-icons/fi";
+import { ArrowLeft, Check, X } from "lucide-react";
+import { UseAuth } from "../../../store/auth.context";
+import { Link, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 function Signup() {
     const [currentStep, setCurrentStep] = useState(1);
     const [agreed, setAgreed] = useState(false);
+     const {RegisterUser, handleGoogleSignIn} = UseAuth()
     const [formData, setFormData] = useState({
         email: "",
         firstName: "",
         lastName: "",
         password: "",
     });
-
+   const navigate = useNavigate()
     const [errors, setErrors] = useState({});
     const [touched, setTouched] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
     const validateField = (name, value) => {
         switch (name) {
@@ -103,23 +107,45 @@ function Signup() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         // Validate password
         const passwordError = validateField("password", formData.password);
         if (passwordError) {
             setErrors((prev) => ({ ...prev, password: passwordError }));
             return;
         }
+           setIsSubmitting(true);
+         try {
+            const response =  await  RegisterUser(formData)
+         if(response.status_code === 201){
+             setIsSubmitting(false);
+            toast.success(response.message);  
+            navigate("/verifyEmail")    
+         }else{
+          toast.error(response.detail);  
+         }
+            
+         } catch (error) {
+        console.log("Failed to login") 
+         }{
+         setIsSubmitting(false)
+         }
 
-        setIsSubmitting(true);
-        try {
-            console.log("Form submitted:", formData);
-        } finally {
-            setIsSubmitting(false);
-        }
+       
     };
 
     const togglePasswordVisibility = () => setShowPassword((prev) => !prev);
+
+    const handleGoogleSignInClick = async () => {
+        setIsGoogleLoading(true);
+        try {
+            await handleGoogleSignIn();
+        } catch (error) {
+            toast.error('Failed to sign up with Google');
+            console.log('Google sign-up error:', error);
+        } finally {
+            setIsGoogleLoading(false);
+        }
+    };
 
     const passwordChecks = {
         number: /\d/.test(formData.password),
@@ -181,337 +207,252 @@ function Signup() {
     }, [formData.password]);
 
     return (
-        <div className="grid sm:mx-20 grid-cols-1 px-2 py-6 sm:px-8 sm:py-8 bg-white lg:grid-cols-2 justify-center min-h-screen">
-            <div
-                className="hidden lg:flex relative w-full p-20 rounded-3xl bg-cover bg-center bg-no-repeat"
-                style={{ backgroundImage: `url(${img1})` }}
-            >
-                <div className="absolute inset-0 bg-black/30 rounded-3xl"></div>
-                <div className="relative z-10 h-full flex flex-col">
-                    <div className="mb-8">
-                        <LogoWhite />
-                    </div>
-                    <div className="flex-grow flex flex-col justify-center gap-6">
-                        <h1 className="font-semibold text-2xl sm:text-5xl text-white leading-tight">
-                            Streamline your legal practice with ds Legal
-                        </h1>
-                        <p className="font-normal text-base text-gray-200 opacity-70">
-                            Introducing our innovative legal app, designed to
-                            streamline your legal processes with a robust set of
-                            features that enhance productivity and inspire new
-                            ideas.
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <div className="flex flex-wrap mx-auto items-center justify-center px-4">
-                <div className="sm:max-w-md bg-white p-8 rounded-lg">
+        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+            {/* Full Width Signup Form */}
+            <div className="w-full max-w-md lg:max-w-lg xl:max-w-xl px-4 sm:px-6 lg:px-8">
+                <div className="w-full bg-white rounded-lg shadow-lg p-6 sm:p-8 lg:p-10">
                     {currentStep === 1 ? (
                         <>
-                            <div className="flex justify-left mb-4">
-                                <img src={logo} alt="Logo" className="h-8" />
+                            {/* Logo */}
+                            <div className="mb-8 sm:mb-10 auth-logo">
+                                <LogoColor />
                             </div>
-                            <h1 className="font-semibold text-2xl mb-2 sm:mb-4 sm:text-5xl text-black leading-tight">
+                            
+                            {/* Heading */}
+                            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-gray-900 mb-3">
                                 Create Account
                             </h1>
-                            <p className="text-sm text-left text-gray-500 mb-4">
+                            
+                            <p className="text-lg sm:text-xl text-gray-600 mb-8 sm:mb-10">
+                                Join DS Legal and streamline your legal practice
+                            </p>
+                            
+                            {/* Sign in link */}
+                            <p className="text-base sm:text-lg text-gray-600 mb-8 sm:mb-10">
                                 Do you have an account already?{" "}
-                                <span className="text-blue-600 hover:underline cursor-pointer">
+                                <Link className="text-blue-600 hover:underline font-medium" to="/login">
                                     Sign In
-                                </span>
+                                </Link>
                             </p>
 
-                            <form onSubmit={handleNext} className="space-y-4">
+                            <form onSubmit={handleNext} className="space-y-6 sm:space-y-8">
                                 {/* Email */}
                                 <div>
-                                    <label
-                                        className="cursor-pointer"
-                                        htmlFor="email"
-                                    >
+                                    <label className="block text-base font-medium text-gray-700 mb-3">
                                         Email Address
                                     </label>
                                     <input
-                                        id="email"
                                         type="email"
                                         name="email"
-                                        placeholder="Email Address"
+                                        autoComplete="email"
+                                        placeholder="email@dslegal.com"
                                         value={formData.email}
                                         onChange={handleChange}
                                         onBlur={handleBlur}
-                                        className={`w-full py-2 px-4 border rounded-md outline-none focus:ring-2 ${
+                                        className={`w-full px-4 sm:px-5 py-4 sm:py-5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-base sm:text-lg ${
                                             errors.email
-                                                ? "border-red-500 focus:ring-red-500"
-                                                : "border-gray-300 focus:ring-blue-500"
+                                                ? "border-red-500"
+                                                : "border-gray-300"
                                         }`}
                                     />
                                     {errors.email && touched.email && (
-                                        <p className="text-red-500 text-sm mt-1">
+                                        <p className="text-red-500 text-sm sm:text-base mt-2">
                                             {errors.email}
                                         </p>
                                     )}
                                 </div>
-
+                                
                                 {/* First Name */}
                                 <div>
-                                    <label
-                                        className="cursor-pointer"
-                                        htmlFor="firstName"
-                                    >
+                                    <label className="block text-base font-medium text-gray-700 mb-3">
                                         First name
                                     </label>
                                     <input
-                                        id="firstName"
                                         type="text"
                                         name="firstName"
-                                        placeholder="First name"
+                                        autoComplete="given-name"
+                                        placeholder="John"
                                         value={formData.firstName}
                                         onChange={handleChange}
                                         onBlur={handleBlur}
-                                        className={`w-full py-2 px-4 border rounded-md outline-none focus:ring-2 ${
+                                        className={`w-full px-4 sm:px-5 py-4 sm:py-5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-base sm:text-lg ${
                                             errors.firstName
-                                                ? "border-red-500 focus:ring-red-500"
-                                                : "border-gray-300 focus:ring-blue-500"
+                                                ? "border-red-500"
+                                                : "border-gray-300"
                                         }`}
                                     />
                                     {errors.firstName && touched.firstName && (
-                                        <p className="text-red-500 text-sm mt-1">
+                                        <p className="text-red-500 text-sm sm:text-base mt-2">
                                             {errors.firstName}
                                         </p>
                                     )}
                                 </div>
-
+                                
                                 {/* Last Name */}
                                 <div>
-                                    <label
-                                        className="cursor-pointer"
-                                        htmlFor="lastName"
-                                    >
-                                        Last name
+                                    <label className="block text-base font-medium text-gray-700 mb-3">
+                                        Last Name
                                     </label>
                                     <input
-                                        id="lastName"
                                         type="text"
                                         name="lastName"
-                                        placeholder="Last name"
+                                        autoComplete="family-name"
+                                        placeholder="Doe"
                                         value={formData.lastName}
                                         onChange={handleChange}
                                         onBlur={handleBlur}
-                                        className={`w-full py-2 px-4 border rounded-md outline-none focus:ring-2 ${
+                                        className={`w-full px-4 sm:px-5 py-4 sm:py-5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-base sm:text-lg ${
                                             errors.lastName
-                                                ? "border-red-500 focus:ring-red-500"
-                                                : "border-gray-300 focus:ring-blue-500"
+                                                ? "border-red-500"
+                                                : "border-gray-300"
                                         }`}
                                     />
                                     {errors.lastName && touched.lastName && (
-                                        <p className="text-red-500 text-sm mt-1">
+                                        <p className="text-red-500 text-sm sm:text-base mt-2">
                                             {errors.lastName}
                                         </p>
                                     )}
                                 </div>
-
+                                
                                 {/* Next Button */}
                                 <button
                                     type="submit"
                                     disabled={isSubmitting || !isStep1Valid()}
-                                    className="w-full bg-[#1983d5] text-white py-2 rounded-full hover:bg-blue-700 
-                                    transition flex justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="w-full bg-blue-600 text-white py-4 sm:py-5 rounded-lg font-semibold hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed text-base sm:text-lg"
                                 >
                                     {isSubmitting ? (
-                                        <span className="animate-spin">↻</span>
+                                        <div className="spinner border-white"></div>
                                     ) : (
-                                        <h6>Next</h6>
+                                        <span>Next</span>
                                     )}
                                 </button>
 
                                 {/* Divider */}
-                                <div className="flex items-center gap-4 my-1">
-                                    <hr className="flex-grow border-gray-300" />
-                                    <span className="text-gray-400 text-sm">
-                                        or
-                                    </span>
-                                    <hr className="flex-grow border-gray-300" />
+                                <div className="flex items-center my-6 sm:my-8">
+                                    <div className="flex-grow h-px bg-gray-300" />
+                                    <span className="px-4 sm:px-6 text-gray-500 text-sm sm:text-base">Or</span>
+                                    <div className="flex-grow h-px bg-gray-300" />
                                 </div>
 
-                                {/* Google */}
+                                {/* Google Button */}
                                 <button
                                     type="button"
-                                    className="w-full flex items-center justify-center gap-3 cursor-pointer 
-                                    border border-gray-300 py-3 rounded-md hover:bg-gray-100"
+                                    onClick={handleGoogleSignInClick}
+                                    disabled={isGoogleLoading}
+                                    className="w-full flex items-center justify-center gap-4 border border-gray-300 py-4 sm:py-5 rounded-lg hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    <img
-                                        src="https://www.svgrepo.com/show/475656/google-color.svg"
-                                        alt="Google"
-                                        className="w-5 h-5"
-                                    />
-                                    <span className="google">Google</span>
+                                    {isGoogleLoading ? (
+                                        <div className="spinner border-gray-600"></div>
+                                    ) : (
+                                        <>
+                                            <img
+                                                src="https://www.svgrepo.com/show/475656/google-color.svg"
+                                                alt="Google"
+                                                className="w-5 sm:w-6 h-5 sm:h-6"
+                                            />
+                                            <span className="text-gray-700 font-medium text-base sm:text-lg">Continue with Google</span>
+                                        </>
+                                    )}
                                 </button>
                             </form>
 
                             {/* Footer Links */}
-                            <div className="flex justify-center gap-4 mt-4 text-xs text-gray-400">
-                                <a href="#" className="hover:underline">
-                                    Help
-                                </a>
-                                <a href="#" className="hover:underline">
-                                    Privacy
-                                </a>
-                                <a href="#" className="hover:underline">
-                                    Terms
-                                </a>
+                            <div className="flex justify-center gap-6 sm:gap-8 mt-8 sm:mt-10 text-sm sm:text-base text-gray-500">
+                                <a href="#" className="hover:underline">Help</a>
+                                <a href="#" className="hover:underline">Privacy</a>
+                                <a href="#" className="hover:underline">Terms</a>
                             </div>
                         </>
                     ) : (
-                        <div className="w-full max-w-md mx-auto">
+                        <div className="w-full">
                             <button
                                 onClick={handleBack}
-                                className="text-base mb-4 flex gap-2 items-center cursor-pointer text-gray-500 hover:text-blue-500"
+                                className="text-gray-500 hover:text-blue-500 mb-6 sm:mb-8 flex items-center gap-2 text-base sm:text-lg"
                             >
-                                <ArrowLeft size={24} /> Back
+                                <ArrowLeft size={20} /> Back
                             </button>
-                            <h1 className="font-semibold text-2xl mb-2 sm:mb-4 sm:text-3xl text-black leading-tight">
-                                Create password
+                            
+                            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-gray-900 mb-3">
+                                Create Password
                             </h1>
-                            <p className="text-sm text-gray-500 mb-6">
-                                Do you have an account already?{" "}
-                                <span className="text-blue-600 hover:underline cursor-pointer">
-                                    Sign In
-                                </span>
+                            
+                            <p className="text-lg sm:text-xl text-gray-600 mb-8 sm:mb-10">
+                                Secure your account with a strong password
                             </p>
-
-                            <form onSubmit={handleSubmit} className="space-y-4">
+                            
+                            <p className="text-base sm:text-lg text-gray-600 mb-8 sm:mb-10">
+                                Do you have an account already?{" "}
+                                <Link className="text-blue-600 hover:underline font-medium" to="/login">
+                                    Sign In
+                                </Link>
+                            </p>
+                            
+                            <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
                                 {/* Password Field */}
                                 <div className="relative">
+                                    <label className="block text-base font-medium text-gray-700 mb-3">
+                                        Password
+                                    </label>
                                     <input
-                                        type={
-                                            showPassword ? "text" : "password"
-                                        }
+                                        type={showPassword ? "text" : "password"}
                                         name="password"
-                                        placeholder="Password"
+                                        autoComplete="new-password"
+                                        placeholder="**********"
                                         value={formData.password}
                                         onChange={handleChange}
                                         onBlur={handleBlur}
-                                        className={`w-full p-2 sm:p-3 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none ${
+                                        className={`w-full px-4 sm:px-5 py-4 sm:py-5 pr-14 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-base sm:text-lg ${
                                             errors.password
                                                 ? "border-red-500"
                                                 : "border-gray-300"
                                         }`}
                                     />
-                                    <button
-                                        type="button"
+                                    <span
+                                        className="absolute right-4 top-[52px] cursor-pointer text-gray-500"
                                         onClick={togglePasswordVisibility}
-                                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
                                     >
-                                        {showPassword ? (
-                                            <EyeOff size={20} />
-                                        ) : (
-                                            <Eye size={20} />
-                                        )}
-                                    </button>
+                                        {showPassword ? <FiEyeOff size={24} /> : <FiEye size={24} />}
+                                    </span>
                                     {errors.password && (
-                                        <p className="text-red-500 text-sm mt-1">
+                                        <p className="text-red-500 text-sm sm:text-base mt-2">
                                             {errors.password}
                                         </p>
                                     )}
                                 </div>
 
                                 {/* Password Strength */}
-                                <div className="mt-2">
-                                    <div className="flex items-center gap-2 text-sm">
-                                        <span>Password strength:</span>
-                                        <span
-                                            className={`font-medium ${passwordStrength.textColor}`}
-                                        >
+                                <div className="mt-6">
+                                    <div className="flex items-center gap-2 text-sm sm:text-base mb-3">
+                                        <span>Strength:</span>
+                                        <span className={`font-medium ${passwordStrength.textColor}`}>
                                             {passwordStrength.message}
                                         </span>
                                     </div>
 
                                     {formData.password && (
-                                        <ul className="mt-2 text-xs text-gray-600 space-y-1">
-                                            <li className="flex items-center gap-1">
-                                                {formData.password.length >=
-                                                8 ? (
-                                                    <Check
-                                                        className="text-green-500"
-                                                        size={14}
-                                                    />
-                                                ) : (
-                                                    <X
-                                                        className="text-red-500"
-                                                        size={14}
-                                                    />
-                                                )}
-                                                <span>
-                                                    At least 8 characters
-                                                </span>
+                                        <ul className="text-sm sm:text-base text-gray-600 space-y-2">
+                                            <li className={`flex items-center gap-3 ${passwordChecks.number ? 'text-green-600' : ''}`}>
+                                                {passwordChecks.number ? <Check size={16} /> : <X size={16} />}
+                                                <span>One number</span>
                                             </li>
-                                            <li className="flex items-center gap-1">
-                                                {formData.password.match(
-                                                    /[A-Z]/
-                                                ) ? (
-                                                    <Check
-                                                        className="text-green-500"
-                                                        size={14}
-                                                    />
-                                                ) : (
-                                                    <X
-                                                        className="text-red-500"
-                                                        size={14}
-                                                    />
-                                                )}
-                                                <span>
-                                                    At least one uppercase
-                                                    letter
-                                                </span>
+                                            <li className={`flex items-center gap-3 ${passwordChecks.upper ? 'text-green-600' : ''}`}>
+                                                {passwordChecks.upper ? <Check size={16} /> : <X size={16} />}
+                                                <span>One uppercase letter</span>
                                             </li>
-                                            <li className="flex items-center gap-1">
-                                                {formData.password.match(
-                                                    /[0-9]/
-                                                ) ? (
-                                                    <Check
-                                                        className="text-green-500"
-                                                        size={14}
-                                                    />
-                                                ) : (
-                                                    <X
-                                                        className="text-red-500"
-                                                        size={14}
-                                                    />
-                                                )}
-                                                <span>At least one number</span>
+                                            <li className={`flex items-center gap-3 ${passwordChecks.lower ? 'text-green-600' : ''}`}>
+                                                {passwordChecks.lower ? <Check size={16} /> : <X size={16} />}
+                                                <span>One lowercase letter</span>
                                             </li>
-                                            <li className="flex items-center gap-1">
-                                                {formData.password.match(
-                                                    /[^A-Za-z0-9]/
-                                                ) ? (
-                                                    <Check
-                                                        className="text-green-500"
-                                                        size={14}
-                                                    />
-                                                ) : (
-                                                    <X
-                                                        className="text-red-500"
-                                                        size={14}
-                                                    />
-                                                )}
-                                                <li
-                                                    className={
-                                                        passwordChecks.special
-                                                            ? "text-blue-600 font-medium"
-                                                            : ""
-                                                    }
-                                                ></li>
-                                                <span>
-                                                    At least one special
-                                                    character
-                                                </span>
+                                            <li className={`flex items-center gap-3 ${passwordChecks.special ? 'text-green-600' : ''}`}>
+                                                {passwordChecks.special ? <Check size={16} /> : <X size={16} />}
+                                                <span>A special character (!@#$%^&*)</span>
                                             </li>
                                         </ul>
                                     )}
                                 </div>
 
                                 {/* Terms Agreement */}
-                                <div className="flex items-start space-x-3 mt-6 text-xs sm:text-sm text-gray-600">
+                                <div className="flex items-start space-x-3 mt-6 sm:mt-8 text-sm sm:text-base text-gray-600">
                                     <input
                                         type="checkbox"
                                         checked={agreed}
@@ -541,11 +482,13 @@ function Signup() {
                                 <button
                                     type="submit"
                                     disabled={isSubmitting || !agreed}
-                                    className="w-full bg-blue-600 text-white py-2 sm:py-3 rounded-full hover:bg-blue-700 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="w-full bg-blue-600 text-white py-4 sm:py-5 rounded-lg font-semibold hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed text-base sm:text-lg"
                                 >
-                                    {isSubmitting
-                                        ? "Creating account..."
-                                        : "Sign Up"}
+                                    {isSubmitting ? (
+                                        <div className="spinner border-white"></div>
+                                    ) : (
+                                        <span>Create Account</span>
+                                    )}
                                 </button>
                             </form>
                         </div>
